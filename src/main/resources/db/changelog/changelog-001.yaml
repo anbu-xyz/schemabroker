@@ -1,0 +1,291 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: schemabroker
+      changes:
+        - createTable:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: schema_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: jdbc_url
+                  type: VARCHAR(255)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 2
+      author: schemabroker
+      changes:
+        - createTable:
+            tableName: schema_lease
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: schema_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lease_id
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: leased_at
+                  type: TIMESTAMP
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP
+              - column:
+                  name: last_heartbeat_at
+                  type: TIMESTAMP
+              - column:
+                  name: owner
+                  type: VARCHAR(100)
+              - column:
+                  name: metadata
+                  type: CLOB
+
+  - changeSet:
+      id: 3
+      author: schemabroker
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: schema_lease
+            baseColumnNames: schema_name
+            referencedTableName: schema_pool
+            referencedColumnNames: schema_name
+            constraintName: fk_schema_lease_pool
+
+  - changeSet:
+      id: 4
+      author: schemabroker
+      changes:
+        - createIndex:
+            tableName: schema_lease
+            indexName: idx_schema_lease_expires_at
+            columns:
+              - column:
+                  name: expires_at
+
+  - changeSet:
+      id: 5
+      author: schemabroker
+      changes:
+        - sql:
+            dbms: h2
+            sql: |-
+              CREATE UNIQUE INDEX IF NOT EXISTS ux_schema_active ON schema_lease (schema_name) WHERE status='ACTIVE';
+
+  - changeSet:
+      id: 6
+      author: schemabroker
+      changes:
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_01"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_02"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_03"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_04"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_05"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_06"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_07"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_08"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_09"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_10"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_11"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_12"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_13"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_14"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_15"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_16"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_17"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_18"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_19"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        - insert:
+            tableName: schema_pool
+            columns:
+              - column:
+                  name: schema_name
+                  value: "SCHEMA_20"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+
