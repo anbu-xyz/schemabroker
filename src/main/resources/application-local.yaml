@@ -1,0 +1,9 @@
+# Local development overrides. Enable the H2 console when running with the 'local' profile.
+# Activate with: mvn spring-boot:run -Dspring-boot.run.profiles=local
+
+logging:
+  config: classpath:logback-local.xml
+
+h2Console:
+  enabled: true
+

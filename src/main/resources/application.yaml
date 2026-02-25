@@ -1,3 +1,17 @@
 spring:
   application:
     name: schemabroker
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: ${h2Console.enabled:false}
+      path: /h2-console
+
+# Toggle for enabling H2 console for local/dev only. Defaults to false.
+h2Console:
+  enabled: false
+
+lease:
+  ttlSeconds: 600
