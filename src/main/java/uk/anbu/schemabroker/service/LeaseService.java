@@ -8,11 +8,15 @@ import uk.anbu.schemabroker.model.SchemaLease;
 import uk.anbu.schemabroker.model.SchemaPool;
 import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
+import uk.anbu.schemabroker.web.dto.SchemaStatusDto;
+import uk.anbu.schemabroker.web.dto.StatusResponse;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class LeaseService {
@@ -91,5 +95,43 @@ public class LeaseService {
             return Optional.of(leaseRepo.save(lease));
         }
         return Optional.of(lease);
+    }
+
+    @Transactional(readOnly = true)
+    public StatusResponse getStatus() {
+        List<SchemaPool> pools = poolRepo.findAll();
+        Instant now = Instant.now();
+        List<SchemaLease> activeLeases = leaseRepo.findActiveLeasesNotExpired(now);
+
+        Map<String, SchemaLease> bySchema = activeLeases.stream()
+                .collect(Collectors.toMap(SchemaLease::getSchemaName, l -> l, (a, b) -> a));
+
+        List<SchemaStatusDto> schemas = pools.stream()
+                .map(pool -> {
+                    SchemaLease lease = bySchema.get(pool.getSchemaName());
+                    boolean enabled = Boolean.TRUE.equals(pool.getEnabled());
+                    if (lease != null && enabled) {
+                        return new SchemaStatusDto(
+                                pool.getSchemaName(),
+                                true,
+                                "LEASED",
+                                lease.getLeaseId(),
+                                lease.getExpiresAt(),
+                                lease.getOwner()
+                        );
+                    } else {
+                        return new SchemaStatusDto(
+                                pool.getSchemaName(),
+                                enabled,
+                                "FREE",
+                                null,
+                                null,
+                                null
+                        );
+                    }
+                })
+                .toList();
+
+        return new StatusResponse(ttlSeconds, schemas);
     }
 }
