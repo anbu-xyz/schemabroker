@@ -1,7 +1,9 @@
 package uk.anbu.schemabroker.service;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.anbu.schemabroker.model.SchemaLease;
@@ -19,6 +21,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class LeaseService {
 
     private final SchemaPoolRepository poolRepo;
@@ -31,6 +34,20 @@ public class LeaseService {
         this.poolRepo = poolRepo;
         this.leaseRepo = leaseRepo;
         this.ttlSeconds = ttlSeconds;
+    }
+
+    // Runs every minute to expire ACTIVE leases past their expiry
+    @Scheduled(fixedRateString = "PT1M")
+    @Transactional
+    public void expireLeases() {
+        Instant now = Instant.now();
+        List<SchemaLease> expired = leaseRepo.findActiveExpired(now);
+        if (expired.isEmpty()) {
+            return;
+        }
+        expired.forEach(l -> l.setStatus("EXPIRED"));
+        leaseRepo.saveAll(expired);
+        log.info("Expired {} leases", expired.size());
     }
 
     @Transactional
