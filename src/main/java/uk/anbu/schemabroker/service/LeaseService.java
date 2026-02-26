@@ -59,4 +59,22 @@ public class LeaseService {
         return Optional.empty();
     }
 
+    @Transactional
+    public Optional<SchemaLease> heartbeat(String leaseId) {
+        Optional<SchemaLease> leaseOpt = leaseRepo.findByLeaseId(leaseId);
+        if (leaseOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        SchemaLease lease = leaseOpt.get();
+        Instant now = Instant.now();
+
+        if (!"ACTIVE".equals(lease.getStatus()) || lease.getExpiresAt().isBefore(now)) {
+            return Optional.of(lease);
+        }
+
+        lease.setLastHeartbeatAt(now);
+        lease.setExpiresAt(now.plusSeconds(ttlSeconds));
+        return Optional.of(leaseRepo.save(lease));
+    }
 }
