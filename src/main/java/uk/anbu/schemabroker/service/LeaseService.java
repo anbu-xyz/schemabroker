@@ -77,4 +77,19 @@ public class LeaseService {
         lease.setExpiresAt(now.plusSeconds(ttlSeconds));
         return Optional.of(leaseRepo.save(lease));
     }
+
+    @Transactional
+    public Optional<SchemaLease> release(String leaseId) {
+        Optional<SchemaLease> leaseOpt = leaseRepo.findByLeaseId(leaseId);
+        if (leaseOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        SchemaLease lease = leaseOpt.get();
+        if ("ACTIVE".equals(lease.getStatus())) {
+            lease.setStatus("RELEASED");
+            return Optional.of(leaseRepo.save(lease));
+        }
+        return Optional.of(lease);
+    }
 }
