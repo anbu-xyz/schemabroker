@@ -102,7 +102,8 @@ databaseChangeLog:
         - sql:
             dbms: h2
             sql: |-
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_schema_active ON schema_lease (schema_name)
+              ALTER TABLE schema_lease ADD schema_active VARCHAR(255) as (CASE WHEN status = 'ACTIVE' THEN schema_name ELSE null END);
+              ALTER TABLE schema_lease ADD CONSTRAINT ux_schema_active UNIQUE (schema_active);
 
   - changeSet:
       id: 6

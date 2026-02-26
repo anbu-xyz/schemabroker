@@ -107,31 +107,34 @@ public class LeaseService {
                 .collect(Collectors.toMap(SchemaLease::getSchemaName, l -> l, (a, b) -> a));
 
         List<SchemaStatusDto> schemas = pools.stream()
-                .map(pool -> {
-                    SchemaLease lease = bySchema.get(pool.getSchemaName());
-                    boolean enabled = Boolean.TRUE.equals(pool.getEnabled());
-                    if (lease != null && enabled) {
-                        return new SchemaStatusDto(
-                                pool.getSchemaName(),
-                                true,
-                                "LEASED",
-                                lease.getLeaseId(),
-                                lease.getExpiresAt(),
-                                lease.getOwner()
-                        );
-                    } else {
-                        return new SchemaStatusDto(
-                                pool.getSchemaName(),
-                                enabled,
-                                "FREE",
-                                null,
-                                null,
-                                null
-                        );
-                    }
-                })
+                .map(pool -> toSchemaStatusDto(pool, bySchema))
                 .toList();
 
         return new StatusResponse(ttlSeconds, schemas);
+    }
+
+    private static SchemaStatusDto toSchemaStatusDto(SchemaPool pool,
+                                                     Map<String, SchemaLease> bySchema) {
+        SchemaLease lease = bySchema.get(pool.getSchemaName());
+        boolean enabled = Boolean.TRUE.equals(pool.getEnabled());
+        if (lease != null && enabled) {
+            return new SchemaStatusDto(
+                    pool.getSchemaName(),
+                    true,
+                    "LEASED",
+                    lease.getLeaseId(),
+                    lease.getExpiresAt(),
+                    lease.getOwner()
+            );
+        } else {
+            return new SchemaStatusDto(
+                    pool.getSchemaName(),
+                    enabled,
+                    "FREE",
+                    null,
+                    null,
+                    null
+            );
+        }
     }
 }
