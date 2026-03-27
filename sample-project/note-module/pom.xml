@@ -11,6 +11,11 @@
 
     <artifactId>note-module</artifactId>
 
+    <properties>
+        <schema.lease.file>${project.build.directory}/schema-lease.properties</schema.lease.file>
+        <schema.client.owner>${project.artifactId}</schema.client.owner>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -25,6 +30,17 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>uk.anbu.schemabroker</groupId>
+            <artifactId>schema-client</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -32,6 +48,64 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>fetch-schema-lease</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>uk.anbu.schemabroker.schema.client.SchemaClientAcquireLease</mainClass>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>--broker-url</argument>
+                                <argument>${schema.broker.url}</argument>
+                                <argument>--owner</argument>
+                                <argument>${schema.client.owner}</argument>
+                                <argument>--output</argument>
+                                <argument>${schema.lease.file}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>release-schema-lease</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>uk.anbu.schemabroker.schema.client.SchemaClientReleaseLease</mainClass>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>--broker-url</argument>
+                                <argument>${schema.broker.url}</argument>
+                                <argument>--input</argument>
+                                <argument>${schema.lease.file}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>uk.anbu.schemabroker</groupId>
+                        <artifactId>schema-client</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <spring.config.additional-location>optional:file:${schema.lease.file}</spring.config.additional-location>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>

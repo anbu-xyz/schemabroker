@@ -33,7 +33,9 @@ public class LeaseController {
                 clientIp, clientHostname, now);
         if (maybe.isPresent()) {
             SchemaLease lease = maybe.get();
-            AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getExpiresAt(), leaseService.getTtlSeconds());
+            AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(),
+                    lease.getLoginUser(), lease.getJdbcUrl(),
+                    lease.getExpiresAt(), leaseService.getTtlSeconds());
             return ResponseEntity.status(HttpStatus.CREATED).body(resp);
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(java.util.Collections.singletonMap("error", "no free schemas"));
@@ -52,7 +54,9 @@ public class LeaseController {
             return ResponseEntity.status(HttpStatus.GONE)
                     .body(java.util.Collections.singletonMap("error", "lease expired or released"));
         }
-        AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getExpiresAt(), leaseService.getTtlSeconds());
+        AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(),
+                lease.getLoginUser(), lease.getJdbcUrl(),
+                lease.getExpiresAt(), leaseService.getTtlSeconds());
         return ResponseEntity.ok(resp);
     }
 
