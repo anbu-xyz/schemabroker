@@ -5,10 +5,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.anbu.schemabroker.model.SchemaLease;
-import uk.anbu.schemabroker.model.SchemaPool;
 import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 import uk.anbu.schemabroker.service.LeaseService;
+import uk.anbu.schemabroker.service.LeaseStatus;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class LeaseServiceHeartbeatSteps {
     @Then("the heartbeat lease status is {string}")
     public void the_heartbeat_lease_status_is(String status) {
         assertThat(heartbeatResult).isPresent();
-        assertThat(heartbeatResult.get().getStatus()).isEqualTo(status);
+        assertThat(heartbeatResult.get().getStatus()).isEqualTo(LeaseStatus.valueOf(status));
     }
 
     @Then("the lease expiry time is later than the remembered expiry time")

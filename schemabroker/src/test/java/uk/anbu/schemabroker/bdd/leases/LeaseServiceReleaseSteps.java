@@ -9,6 +9,7 @@ import uk.anbu.schemabroker.model.SchemaPool;
 import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 import uk.anbu.schemabroker.service.LeaseService;
+import uk.anbu.schemabroker.service.LeaseStatus;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -41,7 +42,9 @@ public class LeaseServiceReleaseSteps {
         Instant now = Instant.now();
         SchemaLease lease = new SchemaLease();
         lease.setSchemaName(pool.getSchemaName());
-        lease.setStatus("ACTIVE");
+        lease.setLoginUser("sa");
+        lease.setJdbcUrl("jdbc:h2:mem:" + pool.getSchemaName());
+        lease.setStatus(LeaseStatus.ACTIVE);
         lease.setLeasedAt(now);
         lease.setExpiresAt(now.plusSeconds(600));
         lease.setLastHeartbeatAt(now);
@@ -59,7 +62,9 @@ public class LeaseServiceReleaseSteps {
         Instant now = Instant.now();
         SchemaLease lease = new SchemaLease();
         lease.setSchemaName(pool.getSchemaName());
-        lease.setStatus("RELEASED");
+        lease.setLoginUser("sa");
+        lease.setJdbcUrl("jdbc:h2:mem:" + pool.getSchemaName());
+        lease.setStatus(LeaseStatus.RELEASED);
         lease.setLeasedAt(now.minusSeconds(600));
         lease.setExpiresAt(now.plusSeconds(600));
         lease.setLastHeartbeatAt(now.minusSeconds(600));
@@ -81,7 +86,7 @@ public class LeaseServiceReleaseSteps {
     @Then("the released lease status is {string}")
     public void the_released_lease_status_is(String status) {
         assertThat(releaseResult).isPresent();
-        assertThat(releaseResult.get().getStatus()).isEqualTo(status);
+        assertThat(releaseResult.get().getStatus()).isEqualTo(LeaseStatus.valueOf(status));
     }
 
     @Then("no released lease is returned")

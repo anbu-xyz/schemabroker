@@ -50,7 +50,7 @@ public class LeaseService {
         if (expired.isEmpty()) {
             return;
         }
-        expired.forEach(l -> l.setStatus("EXPIRED"));
+        expired.forEach(l -> l.setStatus(LeaseStatus.EXPIRED));
         leaseRepo.saveAll(expired);
         log.info("Expired {} leases", expired.size());
     }
@@ -71,8 +71,11 @@ public class LeaseService {
             // Create lease
             SchemaLease lease = new SchemaLease();
             lease.setSchemaName(pool.getSchemaName());
+            lease.setJdbcUrl(pool.getJdbcUrl());
+            lease.setLoginUser(pool.getLoginUser());
+            lease.setJdbcUrl(pool.getJdbcUrl());
             lease.setLeaseId(UUID.randomUUID().toString());
-            lease.setStatus("ACTIVE");
+            lease.setStatus(LeaseStatus.ACTIVE);
             lease.setLeasedAt(now);
             lease.setExpiresAt(now.plusSeconds(ttlSeconds));
             lease.setLastHeartbeatAt(now);
@@ -93,7 +96,7 @@ public class LeaseService {
 
         SchemaLease lease = leaseOpt.get();
 
-        if (!"ACTIVE".equals(lease.getStatus()) || lease.getExpiresAt().isBefore(now)) {
+        if (!LeaseStatus.ACTIVE.equals(lease.getStatus()) || lease.getExpiresAt().isBefore(now)) {
             return Optional.of(lease);
         }
 
@@ -110,8 +113,8 @@ public class LeaseService {
         }
 
         SchemaLease lease = leaseOpt.get();
-        if ("ACTIVE".equals(lease.getStatus())) {
-            lease.setStatus("RELEASED");
+        if (LeaseStatus.ACTIVE.equals(lease.getStatus())) {
+            lease.setStatus(LeaseStatus.RELEASED);
             return Optional.of(leaseRepo.save(lease));
         }
         return Optional.of(lease);
@@ -139,6 +142,8 @@ public class LeaseService {
         if (lease != null && enabled) {
             return new SchemaStatusDto(
                     pool.getSchemaName(),
+                    pool.getLoginUser(),
+                    pool.getJdbcUrl(),
                     true,
                     "LEASED",
                     lease.getLeaseId(),
@@ -148,6 +153,8 @@ public class LeaseService {
         } else {
             return new SchemaStatusDto(
                     pool.getSchemaName(),
+                    pool.getLoginUser(),
+                    pool.getJdbcUrl(),
                     enabled,
                     "FREE",
                     null,

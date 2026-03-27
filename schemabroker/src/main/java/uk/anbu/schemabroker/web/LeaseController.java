@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.anbu.schemabroker.service.LeaseService;
+import uk.anbu.schemabroker.service.LeaseStatus;
 import uk.anbu.schemabroker.web.dto.AcquireLeaseRequest;
 import uk.anbu.schemabroker.web.dto.AcquireLeaseResponse;
 import uk.anbu.schemabroker.web.dto.ReleaseLeaseResponse;
@@ -43,7 +44,7 @@ public class LeaseController {
                     .body(java.util.Collections.singletonMap("error", "lease not found"));
         }
         SchemaLease lease = maybe.get();
-        if (!"ACTIVE".equals(lease.getStatus()) || lease.getExpiresAt().isBefore(Instant.now())) {
+        if (!LeaseStatus.ACTIVE.equals(lease.getStatus()) || lease.getExpiresAt().isBefore(Instant.now())) {
             return ResponseEntity.status(HttpStatus.GONE)
                     .body(java.util.Collections.singletonMap("error", "lease expired or released"));
         }
@@ -59,7 +60,7 @@ public class LeaseController {
                     .body(java.util.Collections.singletonMap("error", "lease not found"));
         }
         SchemaLease lease = maybe.get();
-        ReleaseLeaseResponse resp = new ReleaseLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getStatus());
+        ReleaseLeaseResponse resp = new ReleaseLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getStatus().name());
         return ResponseEntity.ok(resp);
     }
 }

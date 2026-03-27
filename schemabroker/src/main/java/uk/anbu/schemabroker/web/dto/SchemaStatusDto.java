@@ -12,6 +12,8 @@ import java.time.Instant;
 public class SchemaStatusDto {
 
     private String schema;
+    private String loginUser;
+    private String jdbcUrl;
     private boolean enabled;
     private String status;
     private String leaseId;

@@ -10,12 +10,10 @@ import uk.anbu.schemabroker.model.SchemaPool;
 import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 import uk.anbu.schemabroker.service.LeaseService;
+import uk.anbu.schemabroker.service.LeaseStatus;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +43,8 @@ public class LeaseServiceAcquireSteps {
         for (Map<String, String> row : rows) {
             SchemaPool pool = new SchemaPool();
             pool.setSchemaName(row.get("schemaName"));
+            pool.setLoginUser("sa");
+            pool.setJdbcUrl("jdbc:h2:mem:" + row.get("schemaName"));
             pool.setEnabled(Boolean.parseBoolean(row.get("enabled")));
             schemaPoolRepository.save(pool);
         }
@@ -61,7 +61,9 @@ public class LeaseServiceAcquireSteps {
         for (SchemaPool pool : schemaPoolRepository.findAll()) {
             SchemaLease lease = new SchemaLease();
             lease.setSchemaName(pool.getSchemaName());
-            lease.setStatus("ACTIVE");
+            lease.setJdbcUrl(pool.getJdbcUrl());
+            lease.setLoginUser(pool.getLoginUser());
+            lease.setStatus(LeaseStatus.ACTIVE);
             lease.setLeasedAt(now);
             lease.setExpiresAt(now.plusSeconds(600));
             lease.setLastHeartbeatAt(now);
@@ -76,7 +78,9 @@ public class LeaseServiceAcquireSteps {
         Instant now = Instant.now();
         SchemaLease lease = new SchemaLease();
         lease.setSchemaName(schemaName);
-        lease.setStatus("EXPIRED");
+        lease.setJdbcUrl("jdbc:h2:mem:" + schemaName);
+        lease.setLoginUser("sa");
+        lease.setStatus(LeaseStatus.EXPIRED);
         lease.setLeasedAt(now.minusSeconds(1200));
         lease.setExpiresAt(now.minusSeconds(600));
         lease.setLastHeartbeatAt(now.minusSeconds(1200));
@@ -104,7 +108,7 @@ public class LeaseServiceAcquireSteps {
     @Then("the lease status is {string}")
     public void the_lease_status_is(String status) {
         assertThat(acquiredLease).isPresent();
-        assertThat(acquiredLease.get().getStatus()).isEqualTo(status);
+        assertThat(acquiredLease.get().getStatus()).isEqualTo(LeaseStatus.valueOf(status));
     }
 
     @Then("the lease owner is {string}")
@@ -115,7 +119,7 @@ public class LeaseServiceAcquireSteps {
 
     @Then("the lease schema is one of:")
     public void the_lease_schema_is_one_of(DataTable dataTable) {
-        Set<String> allowed = dataTable.asList().stream().collect(Collectors.toSet());
+        var allowed = new HashSet<>(dataTable.asList());
         assertThat(acquiredLease).isPresent();
         assertThat(allowed).contains(acquiredLease.get().getSchemaName());
     }

@@ -18,10 +18,16 @@ databaseChangeLog:
                   type: VARCHAR(100)
                   constraints:
                     nullable: false
-                    unique: true
+              - column:
+                  name: login_user
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
               - column:
                   name: jdbc_url
                   type: VARCHAR(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: enabled
                   type: BOOLEAN
@@ -44,6 +50,16 @@ databaseChangeLog:
               - column:
                   name: schema_name
                   type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: login_user
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: jdbc_url
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
@@ -77,15 +93,24 @@ databaseChangeLog:
       id: 3
       author: schemabroker
       changes:
-        - addForeignKeyConstraint:
-            baseTableName: schema_lease
-            baseColumnNames: schema_name
-            referencedTableName: schema_pool
-            referencedColumnNames: schema_name
-            constraintName: fk_schema_lease_pool
+        - sql:
+            dbms: h2
+            sql: |-
+              ALTER TABLE schema_pool ADD CONSTRAINT ux_pool UNIQUE (schema_name, jdbc_url);
 
   - changeSet:
       id: 4
+      author: schemabroker
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: schema_lease
+            baseColumnNames: schema_name, jdbc_url
+            referencedTableName: schema_pool
+            referencedColumnNames: schema_name, jdbc_url
+            constraintName: fk_schema_lease_pool
+
+  - changeSet:
+      id: 5
       author: schemabroker
       changes:
         - createIndex:
@@ -96,7 +121,7 @@ databaseChangeLog:
                   name: expires_at
 
   - changeSet:
-      id: 5
+      id: 6
       author: schemabroker
       changes:
         - sql:
@@ -106,7 +131,7 @@ databaseChangeLog:
               ALTER TABLE schema_lease ADD CONSTRAINT ux_schema_active UNIQUE (schema_active);
 
   - changeSet:
-      id: 6
+      id: 7
       author: schemabroker
       changes:
         - insert:
@@ -115,6 +140,12 @@ databaseChangeLog:
               - column:
                   name: schema_name
                   value: "SCHEMA_01"
+              - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_01;DB_CLOSE_DELAY=-1"
               - column:
                   name: enabled
                   valueBoolean: true
@@ -125,6 +156,12 @@ databaseChangeLog:
                   name: schema_name
                   value: "SCHEMA_02"
               - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_02;DB_CLOSE_DELAY=-1"
+              - column:
                   name: enabled
                   valueBoolean: true
         - insert:
@@ -133,6 +170,12 @@ databaseChangeLog:
               - column:
                   name: schema_name
                   value: "SCHEMA_03"
+              - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_03;DB_CLOSE_DELAY=-1"
               - column:
                   name: enabled
                   valueBoolean: true
@@ -143,6 +186,12 @@ databaseChangeLog:
                   name: schema_name
                   value: "SCHEMA_04"
               - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_04;DB_CLOSE_DELAY=-1"
+              - column:
                   name: enabled
                   valueBoolean: true
         - insert:
@@ -151,6 +200,12 @@ databaseChangeLog:
               - column:
                   name: schema_name
                   value: "SCHEMA_05"
+              - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_05;DB_CLOSE_DELAY=-1"
               - column:
                   name: enabled
                   valueBoolean: true
@@ -161,6 +216,12 @@ databaseChangeLog:
                   name: schema_name
                   value: "SCHEMA_06"
               - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_06;DB_CLOSE_DELAY=-1"
+              - column:
                   name: enabled
                   valueBoolean: true
         - insert:
@@ -169,6 +230,12 @@ databaseChangeLog:
               - column:
                   name: schema_name
                   value: "SCHEMA_07"
+              - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_07;DB_CLOSE_DELAY=-1"
               - column:
                   name: enabled
                   valueBoolean: true
@@ -179,6 +246,12 @@ databaseChangeLog:
                   name: schema_name
                   value: "SCHEMA_08"
               - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_08;DB_CLOSE_DELAY=-1"
+              - column:
                   name: enabled
                   valueBoolean: true
         - insert:
@@ -187,6 +260,12 @@ databaseChangeLog:
               - column:
                   name: schema_name
                   value: "SCHEMA_09"
+              - column:
+                  name: login_user
+                  value: "sa"
+              - column:
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_09;DB_CLOSE_DELAY=-1"
               - column:
                   name: enabled
                   valueBoolean: true
@@ -197,95 +276,11 @@ databaseChangeLog:
                   name: schema_name
                   value: "SCHEMA_10"
               - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
+                  name: login_user
+                  value: "sa"
               - column:
-                  name: schema_name
-                  value: "SCHEMA_11"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_12"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_13"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_14"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_15"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_16"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_17"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_18"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_19"
-              - column:
-                  name: enabled
-                  valueBoolean: true
-        - insert:
-            tableName: schema_pool
-            columns:
-              - column:
-                  name: schema_name
-                  value: "SCHEMA_20"
+                  name: jdbc_url
+                  value: "jdbc:h2:mem:schema_10;DB_CLOSE_DELAY=-1"
               - column:
                   name: enabled
                   valueBoolean: true

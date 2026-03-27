@@ -16,10 +16,13 @@ public class SchemaPool {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "schema_name", nullable = false, unique = true, length = 100)
+    @Column(name = "schema_name", nullable = false, length = 100)
     private String schemaName;
 
-    @Column(name = "jdbc_url", length = 255)
+    @Column(name = "login_user", nullable = false, length = 100)
+    private String loginUser;
+
+    @Column(name = "jdbc_url", length = 4000)
     private String jdbcUrl;
 
     @Column(name = "enabled")
