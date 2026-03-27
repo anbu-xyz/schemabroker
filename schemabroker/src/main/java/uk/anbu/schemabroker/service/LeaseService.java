@@ -10,6 +10,7 @@ import uk.anbu.schemabroker.model.SchemaLease;
 import uk.anbu.schemabroker.model.SchemaPool;
 import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
+import uk.anbu.schemabroker.web.dto.LeaseListResponse;
 import uk.anbu.schemabroker.web.dto.SchemaStatusDto;
 import uk.anbu.schemabroker.web.dto.StatusResponse;
 
@@ -158,5 +159,14 @@ public class LeaseService {
 
     public Optional<SchemaLease> getLeaseDetails(String leaseId) {
         return leaseRepo.findByLeaseId(leaseId);
+    }
+
+    @Transactional(readOnly = true)
+    public LeaseListResponse listAllLeases(Instant now) {
+        return new LeaseListResponse(
+                leaseRepo.findActiveLeasesNotExpired(now),
+                leaseRepo.findActiveExpired(now),
+                leaseRepo.findNonActive()
+        );
     }
 }

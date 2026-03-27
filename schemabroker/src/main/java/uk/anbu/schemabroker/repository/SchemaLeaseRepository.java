@@ -19,6 +19,9 @@ public interface SchemaLeaseRepository extends JpaRepository<SchemaLease, Long> 
     @Query("select sl from SchemaLease sl where sl.status = 'ACTIVE' and sl.expiresAt <= :now")
     List<SchemaLease> findActiveExpired(@Param("now") Instant now);
 
+    @Query("select sl from SchemaLease sl where sl.status <> 'ACTIVE'")
+    List<SchemaLease> findNonActive();
+
     @Query("select sl from SchemaLease sl where sl.schemaName = :schemaName and sl.status = 'ACTIVE'")
     Optional<SchemaLease> findActiveBySchemaName(@Param("schemaName") String schemaName);
 

@@ -27,10 +27,22 @@ Content-Type: application/json
   "owner": "exhaust-test"
 }
 
+### Example: send a heartbeat to keep the lease alive
+# send heartbeat for a specific lease (get lease ID from previous acquire response)
+POST http://localhost:8080/api/v1/leases/3f910b8b-a7a7-4c88-b5db-97ed1dab0ec3/heartbeat
+
+### Example: release a lease
+# release a specific lease (get lease ID from previous acquire response)
+POST http://localhost:8080/api/v1/leases/c76c0941-ccdc-467b-a6f8-07f6d2dcf90e/release
+
 ### Example: list all schemas
 # list all schemas
-GET http://localhost:8080/api/v1/status
+GET http://localhost:8080/api/v1/status/schemas
 
 ### Example: show lease details
 # show details of a specific lease (get lease ID from previous acquire response)
-GET http://localhost:8080/api/v1/status/lease/b117a798-4957-47c7-92b1-41fbde8e0e0f
+GET http://localhost:8080/api/v1/status/lease/d703ef3b-fb10-4711-8899-3bfd86e52615
+
+### Example: show all leases
+# list all leases
+GET http://localhost:8080/api/v1/status/leases
