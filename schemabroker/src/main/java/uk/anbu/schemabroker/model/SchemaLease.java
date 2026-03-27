@@ -1,9 +1,7 @@
 package uk.anbu.schemabroker.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import uk.anbu.schemabroker.service.LeaseStatus;
 
 import java.time.Instant;
@@ -12,7 +10,9 @@ import java.time.Instant;
 @Table(name = "schema_lease")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class SchemaLease {
 
     @Id

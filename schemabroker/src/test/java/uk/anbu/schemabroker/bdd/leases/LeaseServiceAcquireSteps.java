@@ -59,18 +59,19 @@ public class LeaseServiceAcquireSteps {
     public void each_schema_has_an_active_non_expired_lease() {
         Instant now = Instant.now();
         for (SchemaPool pool : schemaPoolRepository.findAll()) {
-            SchemaLease lease = new SchemaLease();
-            lease.setSchemaName(pool.getSchemaName());
-            lease.setJdbcUrl(pool.getJdbcUrl());
-            lease.setLoginUser(pool.getLoginUser());
-            lease.setStatus(LeaseStatus.ACTIVE);
-            lease.setLeasedAt(now);
-            lease.setExpiresAt(now.plusSeconds(600));
-            lease.setIpAddress("127.0.0.1");
-            lease.setHostname("localhost");
-            lease.setLastHeartbeatAt(now);
-            lease.setLeaseId("lease-" + pool.getSchemaName());
-            lease.setOwner("seed-owner");
+            var lease = SchemaLease.builder()
+                    .schemaName(pool.getSchemaName())
+                    .jdbcUrl(pool.getJdbcUrl())
+                    .loginUser(pool.getLoginUser())
+                    .status(LeaseStatus.ACTIVE)
+                    .leasedAt(now)
+                    .expiresAt(now.plusSeconds(600))
+                    .ipAddress("127.0.0.1")
+                    .hostname("localhost")
+                    .lastHeartbeatAt(now)
+                    .leaseId("lease-" + pool.getSchemaName())
+                    .owner("seed-owner")
+                    .build();
             schemaLeaseRepository.save(lease);
         }
     }
@@ -78,18 +79,19 @@ public class LeaseServiceAcquireSteps {
     @Given("there is an expired lease for schema {string}")
     public void there_is_an_expired_lease_for_schema(String schemaName) {
         Instant now = Instant.now();
-        SchemaLease lease = new SchemaLease();
-        lease.setSchemaName(schemaName);
-        lease.setJdbcUrl("jdbc:h2:mem:" + schemaName);
-        lease.setLoginUser("sa");
-        lease.setStatus(LeaseStatus.EXPIRED);
-        lease.setLeasedAt(now.minusSeconds(1200));
-        lease.setExpiresAt(now.minusSeconds(600));
-        lease.setLastHeartbeatAt(now.minusSeconds(1200));
-        lease.setIpAddress("127.0.0.1");
-        lease.setHostname("localhost");
-        lease.setLeaseId("expired-" + schemaName);
-        lease.setOwner("seed-owner");
+        SchemaLease lease = SchemaLease.builder()
+                .schemaName(schemaName)
+                .jdbcUrl("jdbc:h2:mem:" + schemaName)
+                .loginUser("sa")
+                .status(LeaseStatus.EXPIRED)
+                .leasedAt(now.minusSeconds(1200))
+                .expiresAt(now.minusSeconds(600))
+                .lastHeartbeatAt(now.minusSeconds(1200))
+                .ipAddress("127.0.0.1")
+                .hostname("localhost")
+                .leaseId("expired-" + schemaName)
+                .owner("seed-owner")
+                .build();
         schemaLeaseRepository.save(lease);
     }
 

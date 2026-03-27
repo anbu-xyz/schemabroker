@@ -40,18 +40,19 @@ public class LeaseServiceReleaseSteps {
                 .findFirst()
                 .orElseThrow();
         Instant now = Instant.now();
-        SchemaLease lease = new SchemaLease();
-        lease.setSchemaName(pool.getSchemaName());
-        lease.setLoginUser("sa");
-        lease.setJdbcUrl("jdbc:h2:mem:" + pool.getSchemaName());
-        lease.setStatus(LeaseStatus.ACTIVE);
-        lease.setLeasedAt(now);
-        lease.setExpiresAt(now.plusSeconds(600));
-        lease.setLastHeartbeatAt(now);
-        lease.setLeaseId(UUID.randomUUID().toString());
-        lease.setOwner(owner);
-        lease.setIpAddress("127.0.0.1");
-        lease.setHostname("localhost");
+        var lease = SchemaLease.builder()
+                .schemaName(pool.getSchemaName())
+                .loginUser("sa")
+                .jdbcUrl("jdbc:h2:mem:" + pool.getSchemaName())
+                .status(LeaseStatus.ACTIVE)
+                .leasedAt(now)
+                .expiresAt(now.plusSeconds(600))
+                .lastHeartbeatAt(now)
+                .leaseId(UUID.randomUUID().toString())
+                .owner(owner)
+                .ipAddress("127.0.0.1")
+                .hostname("localhost")
+                .build();
         leaseScenarioState.setExistingLease(schemaLeaseRepository.save(lease));
     }
 
@@ -62,18 +63,19 @@ public class LeaseServiceReleaseSteps {
                 .findFirst()
                 .orElseThrow();
         Instant now = Instant.now();
-        SchemaLease lease = new SchemaLease();
-        lease.setSchemaName(pool.getSchemaName());
-        lease.setLoginUser("sa");
-        lease.setJdbcUrl("jdbc:h2:mem:" + pool.getSchemaName());
-        lease.setStatus(LeaseStatus.RELEASED);
-        lease.setLeasedAt(now.minusSeconds(600));
-        lease.setExpiresAt(now.plusSeconds(600));
-        lease.setLastHeartbeatAt(now.minusSeconds(600));
-        lease.setLeaseId(UUID.randomUUID().toString());
-        lease.setOwner(owner);
-        lease.setIpAddress("127.0.0.1");
-        lease.setHostname("localhost");
+        var lease = SchemaLease.builder()
+                .schemaName(pool.getSchemaName())
+                .loginUser("sa")
+                .jdbcUrl("jdbc:h2:mem:" + pool.getSchemaName())
+                .status(LeaseStatus.RELEASED)
+                .leasedAt(now.minusSeconds(600))
+                .expiresAt(now.plusSeconds(600))
+                .lastHeartbeatAt(now.minusSeconds(600))
+                .leaseId(UUID.randomUUID().toString())
+                .owner(owner)
+                .ipAddress("127.0.0.1")
+                .hostname("localhost")
+                .build();
         leaseScenarioState.setExistingLease(schemaLeaseRepository.save(lease));
     }
 

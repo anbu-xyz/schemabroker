@@ -71,20 +71,20 @@ public class LeaseService {
                 continue;
             }
             // Create lease
-            SchemaLease lease = new SchemaLease();
-            lease.setSchemaName(pool.getSchemaName());
-            lease.setJdbcUrl(pool.getJdbcUrl());
-            lease.setLoginUser(pool.getLoginUser());
-            lease.setJdbcUrl(pool.getJdbcUrl());
-            lease.setLeaseId(UUID.randomUUID().toString());
-            lease.setStatus(LeaseStatus.ACTIVE);
-            lease.setLeasedAt(now);
-            lease.setExpiresAt(now.plusSeconds(ttlSeconds));
-            lease.setLastHeartbeatAt(now);
-            lease.setOwner(owner);
-            lease.setIpAddress(clientIp);
-            lease.setHostname(clientHostname);
-            lease.setMetadata(metadata);
+            var lease = SchemaLease.builder()
+                    .schemaName(pool.getSchemaName())
+                    .jdbcUrl(pool.getJdbcUrl())
+                    .loginUser(pool.getLoginUser())
+                    .leaseId(UUID.randomUUID().toString())
+                    .status(LeaseStatus.ACTIVE)
+                    .leasedAt(now)
+                    .expiresAt(now.plusSeconds(ttlSeconds))
+                    .lastHeartbeatAt(now)
+                    .owner(owner)
+                    .ipAddress(clientIp)
+                    .hostname(clientHostname)
+                    .metadata(metadata)
+                    .build();
             SchemaLease saved = leaseRepo.save(lease);
             return Optional.of(saved);
         }
