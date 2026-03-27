@@ -87,7 +87,8 @@ public class LeaseServiceAcquireSteps {
 
     @When("a client {string} acquires a lease with metadata {string}")
     public void a_client_acquires_a_lease_with_metadata(String owner, String metadata) {
-        acquiredLease = leaseService.acquireLease(owner, metadata);
+        var now = Instant.now();
+        acquiredLease = leaseService.acquireLease(owner, metadata, now);
     }
 
     @Then("a lease is returned")

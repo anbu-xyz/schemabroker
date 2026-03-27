@@ -32,7 +32,8 @@ public class LeaseServiceStatusSteps {
 
     @When("I request the lease service status")
     public void i_request_the_lease_service_status() {
-        statusResponse = leaseService.getStatus();
+        Instant now = Instant.now();
+        statusResponse = leaseService.getStatus(now);
     }
 
     @Then("the status ttlSeconds equals the configured TTL")

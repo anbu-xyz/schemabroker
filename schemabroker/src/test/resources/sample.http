@@ -27,7 +27,10 @@ Content-Type: application/json
   "owner": "exhaust-test"
 }
 
-### curl example for the first request
-# Run from a terminal:
-# curl -v -X POST http://localhost:8080/api/v1/leases -H "Content-Type: application/json" -d "{\"owner\":\"test-user-1\",\"metadata\":{\"purpose\":\"integration-test\"}}"
+### Example: list all schemas
+# list all schemas
+GET http://localhost:8080/api/v1/status
 
+### Example: show lease details
+# show details of a specific lease (get lease ID from previous acquire response)
+GET http://localhost:8080/api/v1/status/lease/b117a798-4957-47c7-92b1-41fbde8e0e0f

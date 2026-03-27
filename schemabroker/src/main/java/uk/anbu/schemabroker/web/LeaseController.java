@@ -24,7 +24,8 @@ public class LeaseController {
 
     @PostMapping
     public ResponseEntity<?> acquireLease(@RequestBody AcquireLeaseRequest req) {
-        var maybe = leaseService.acquireLease(req.getOwner(), req.getMetadata() == null ? null : req.getMetadata().toString());
+        var now = Instant.now();
+        var maybe = leaseService.acquireLease(req.getOwner(), req.getMetadata() == null ? null : req.getMetadata().toString(), now);
         if (maybe.isPresent()) {
             SchemaLease lease = maybe.get();
             AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getExpiresAt(), leaseService.getTtlSeconds());
@@ -36,7 +37,7 @@ public class LeaseController {
 
     @PostMapping("/{leaseId}/heartbeat")
     public ResponseEntity<?> heartbeat(@PathVariable String leaseId) {
-        Optional<SchemaLease> maybe = leaseService.heartbeat(leaseId);
+        Optional<SchemaLease> maybe = leaseService.heartbeat(leaseId, Instant.now());
         if (maybe.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(java.util.Collections.singletonMap("error", "lease not found"));

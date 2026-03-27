@@ -40,12 +40,12 @@ public class LeaseServiceHeartbeatSteps {
 
     @When("I send a heartbeat for that lease")
     public void i_send_a_heartbeat_for_that_lease() {
-        heartbeatResult = leaseService.heartbeat(leaseScenarioState.getExistingLease().getLeaseId());
+        heartbeatResult = leaseService.heartbeat(leaseScenarioState.getExistingLease().getLeaseId(), Instant.now());
     }
 
     @When("I send a heartbeat for a random lease id")
     public void i_send_a_heartbeat_for_a_random_lease_id() {
-        heartbeatResult = leaseService.heartbeat("non-existent-" + UUID.randomUUID());
+        heartbeatResult = leaseService.heartbeat("non-existent-" + UUID.randomUUID(), Instant.now());
     }
 
     @Then("the heartbeat returns a lease")

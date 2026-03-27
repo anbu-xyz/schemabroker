@@ -40,7 +40,11 @@ public class LeaseService {
     @Scheduled(fixedRateString = "PT1M")
     @Transactional
     public void expireLeases() {
-        Instant now = Instant.now();
+        expireLeases(Instant.now());
+    }
+
+    @Transactional
+    public void expireLeases(Instant now) {
         List<SchemaLease> expired = leaseRepo.findActiveExpired(now);
         if (expired.isEmpty()) {
             return;
@@ -51,10 +55,9 @@ public class LeaseService {
     }
 
     @Transactional
-    public Optional<SchemaLease> acquireLease(String owner, String metadata) {
+    public Optional<SchemaLease> acquireLease(String owner, String metadata, Instant now) {
         // Find enabled pools
         List<SchemaPool> pools = poolRepo.findAll();
-        Instant now = Instant.now();
         for (SchemaPool pool : pools) {
             if (Boolean.FALSE.equals(pool.getEnabled())) {
                 continue;
@@ -81,14 +84,13 @@ public class LeaseService {
     }
 
     @Transactional
-    public Optional<SchemaLease> heartbeat(String leaseId) {
+    public Optional<SchemaLease> heartbeat(String leaseId, Instant now) {
         Optional<SchemaLease> leaseOpt = leaseRepo.findByLeaseId(leaseId);
         if (leaseOpt.isEmpty()) {
             return Optional.empty();
         }
 
         SchemaLease lease = leaseOpt.get();
-        Instant now = Instant.now();
 
         if (!"ACTIVE".equals(lease.getStatus()) || lease.getExpiresAt().isBefore(now)) {
             return Optional.of(lease);
@@ -115,9 +117,8 @@ public class LeaseService {
     }
 
     @Transactional(readOnly = true)
-    public StatusResponse getStatus() {
+    public StatusResponse getStatus(Instant now) {
         List<SchemaPool> pools = poolRepo.findAll();
-        Instant now = Instant.now();
         List<SchemaLease> activeLeases = leaseRepo.findActiveLeasesNotExpired(now);
 
         Map<String, SchemaLease> bySchema = activeLeases.stream()
@@ -153,5 +154,9 @@ public class LeaseService {
                     null
             );
         }
+    }
+
+    public Optional<SchemaLease> getLeaseDetails(String leaseId) {
+        return leaseRepo.findByLeaseId(leaseId);
     }
 }
