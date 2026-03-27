@@ -1,0 +1,32 @@
+schemas:
+  - schemaName: SCHEMA_01
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_01;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_02
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_02;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_03
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_03;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_04
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_04;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_05
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_05;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_06
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_06;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_07
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_07;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_08
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_08;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_09
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_09;DB_CLOSE_DELAY=-1
+  - schemaName: SCHEMA_10
+    loginUser: sa
+    jdbcUrl: jdbc:h2:mem:schema_10;DB_CLOSE_DELAY=-1
+

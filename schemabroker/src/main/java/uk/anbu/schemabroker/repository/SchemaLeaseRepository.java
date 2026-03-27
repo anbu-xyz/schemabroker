@@ -22,7 +22,10 @@ public interface SchemaLeaseRepository extends JpaRepository<SchemaLease, Long> 
     @Query("select sl from SchemaLease sl where sl.status <> LeaseStatus.ACTIVE")
     List<SchemaLease> findNonActive();
 
-    @Query("select sl from SchemaLease sl where sl.schemaName = :schemaName and sl.status = LeaseStatus.ACTIVE")
-    Optional<SchemaLease> findActiveBySchemaName(@Param("schemaName") String schemaName);
+    @Query("select sl from SchemaLease sl " +
+            "where sl.schemaName = :schemaName " +
+            "  and sl.jdbcUrl = :jdbcUrl " +
+            "  and sl.status = LeaseStatus.ACTIVE")
+    Optional<SchemaLease> findActive(@Param("schemaName") String schemaName, @Param("jdbcUrl") String jdbcUrl);
 
 }

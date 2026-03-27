@@ -60,13 +60,19 @@ public class LeaseService {
                                               String clientIp, String clientHostname,
                                               Instant now) {
         // Find enabled pools
-        List<SchemaPool> pools = poolRepo.findAll();
+        List<SchemaPool> pools = poolRepo.findAllByEnabledTrue();
+        log.info("Number of available schemas: {}", pools.size());
+        List<String> names = pools.stream().map(SchemaPool::getSchemaName).toList();
+        log.info("Available schemas: {}", names);
         for (SchemaPool pool : pools) {
-            if (Boolean.FALSE.equals(pool.getEnabled())) {
+            // acquire lock
+            var schemaForUpdate = poolRepo.findSchemaForUpdate(pool.getSchemaName(), pool.getJdbcUrl());
+            if (schemaForUpdate.isEmpty()) {
+                log.warn("Schema {}@{} disappeared!", pool.getSchemaName(), pool.getJdbcUrl());
                 continue;
             }
             // Check if there's an active lease for this schema
-            Optional<SchemaLease> active = leaseRepo.findActiveBySchemaName(pool.getSchemaName());
+            Optional<SchemaLease> active = leaseRepo.findActive(pool.getSchemaName(), pool.getJdbcUrl());
             if (active.isPresent()) {
                 continue;
             }
@@ -85,11 +91,13 @@ public class LeaseService {
                     .hostname(clientHostname)
                     .metadata(metadata)
                     .build();
-            SchemaLease saved = leaseRepo.save(lease);
-            return Optional.of(saved);
+            var saved = Optional.of(leaseRepo.save(lease));
+            log.info("Acquired schema: {} for owner: {}", pool.getSchemaName(), owner);
+            return saved;
         }
         return Optional.empty();
     }
+
 
     @Transactional
     public Optional<SchemaLease> heartbeat(String leaseId, Instant now) {

@@ -7,3 +7,4 @@ logging:
 h2Console:
   enabled: true
 
+database.init.schemas: ${DATABASE_INIT_SCHEMAS:classpath:schema.yaml}
