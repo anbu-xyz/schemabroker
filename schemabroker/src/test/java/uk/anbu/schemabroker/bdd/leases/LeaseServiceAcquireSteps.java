@@ -66,6 +66,8 @@ public class LeaseServiceAcquireSteps {
             lease.setStatus(LeaseStatus.ACTIVE);
             lease.setLeasedAt(now);
             lease.setExpiresAt(now.plusSeconds(600));
+            lease.setIpAddress("127.0.0.1");
+            lease.setHostname("localhost");
             lease.setLastHeartbeatAt(now);
             lease.setLeaseId("lease-" + pool.getSchemaName());
             lease.setOwner("seed-owner");
@@ -84,6 +86,8 @@ public class LeaseServiceAcquireSteps {
         lease.setLeasedAt(now.minusSeconds(1200));
         lease.setExpiresAt(now.minusSeconds(600));
         lease.setLastHeartbeatAt(now.minusSeconds(1200));
+        lease.setIpAddress("127.0.0.1");
+        lease.setHostname("localhost");
         lease.setLeaseId("expired-" + schemaName);
         lease.setOwner("seed-owner");
         schemaLeaseRepository.save(lease);
@@ -92,7 +96,7 @@ public class LeaseServiceAcquireSteps {
     @When("a client {string} acquires a lease with metadata {string}")
     public void a_client_acquires_a_lease_with_metadata(String owner, String metadata) {
         var now = Instant.now();
-        acquiredLease = leaseService.acquireLease(owner, metadata, now);
+        acquiredLease = leaseService.acquireLease(owner, metadata, "127.0.0.1", "localhost", now);
     }
 
     @Then("a lease is returned")

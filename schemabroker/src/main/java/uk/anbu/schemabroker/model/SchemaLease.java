@@ -47,6 +47,12 @@ public class SchemaLease {
     @Column(name = "owner", length = 100)
     private String owner;
 
+    @Column(name = "ip_address", nullable = false, length = 45)
+    private String ipAddress;
+
+    @Column(name = "hostname", nullable = false, length = 255)
+    private String hostname;
+
     @Lob
     @Column(name = "metadata")
     private String metadata;

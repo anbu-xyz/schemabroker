@@ -50,6 +50,8 @@ public class LeaseServiceReleaseSteps {
         lease.setLastHeartbeatAt(now);
         lease.setLeaseId(UUID.randomUUID().toString());
         lease.setOwner(owner);
+        lease.setIpAddress("127.0.0.1");
+        lease.setHostname("localhost");
         leaseScenarioState.setExistingLease(schemaLeaseRepository.save(lease));
     }
 
@@ -70,6 +72,8 @@ public class LeaseServiceReleaseSteps {
         lease.setLastHeartbeatAt(now.minusSeconds(600));
         lease.setLeaseId(UUID.randomUUID().toString());
         lease.setOwner(owner);
+        lease.setIpAddress("127.0.0.1");
+        lease.setHostname("localhost");
         leaseScenarioState.setExistingLease(schemaLeaseRepository.save(lease));
     }
 

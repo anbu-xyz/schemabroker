@@ -3,6 +3,7 @@ package uk.anbu.schemabroker.web;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 import uk.anbu.schemabroker.service.LeaseService;
 import uk.anbu.schemabroker.service.LeaseStatus;
 import uk.anbu.schemabroker.web.dto.AcquireLeaseRequest;
@@ -24,9 +25,12 @@ public class LeaseController {
     }
 
     @PostMapping
-    public ResponseEntity<?> acquireLease(@RequestBody AcquireLeaseRequest req) {
+    public ResponseEntity<?> acquireLease(@RequestBody AcquireLeaseRequest req, HttpServletRequest request) {
         var now = Instant.now();
-        var maybe = leaseService.acquireLease(req.getOwner(), req.getMetadata() == null ? null : req.getMetadata().toString(), now);
+        var clientIp = request.getRemoteAddr();
+        var clientHostname = request.getRemoteHost();
+        var maybe = leaseService.acquireLease(req.getOwner(), req.getMetadata() == null ? null : req.getMetadata().toString(),
+                clientIp, clientHostname, now);
         if (maybe.isPresent()) {
             SchemaLease lease = maybe.get();
             AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getExpiresAt(), leaseService.getTtlSeconds());

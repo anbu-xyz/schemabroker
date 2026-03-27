@@ -56,7 +56,9 @@ public class LeaseService {
     }
 
     @Transactional
-    public Optional<SchemaLease> acquireLease(String owner, String metadata, Instant now) {
+    public Optional<SchemaLease> acquireLease(String owner, String metadata,
+                                              String clientIp, String clientHostname,
+                                              Instant now) {
         // Find enabled pools
         List<SchemaPool> pools = poolRepo.findAll();
         for (SchemaPool pool : pools) {
@@ -80,6 +82,8 @@ public class LeaseService {
             lease.setExpiresAt(now.plusSeconds(ttlSeconds));
             lease.setLastHeartbeatAt(now);
             lease.setOwner(owner);
+            lease.setIpAddress(clientIp);
+            lease.setHostname(clientHostname);
             lease.setMetadata(metadata);
             SchemaLease saved = leaseRepo.save(lease);
             return Optional.of(saved);
