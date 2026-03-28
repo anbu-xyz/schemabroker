@@ -14,6 +14,8 @@ import uk.anbu.schemabroker.model.SchemaLease;
 import java.time.Instant;
 import java.util.Optional;
 
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
+
 @RestController
 @RequestMapping("/api/v1/leases")
 public class LeaseController {
@@ -29,8 +31,9 @@ public class LeaseController {
         var now = Instant.now();
         var clientIp = request.getRemoteAddr();
         var clientHostname = request.getRemoteHost();
+        var groupName = req.getGroupName() == null? DEFAULT_GROUP_NAME : req.getGroupName();
         var maybe = leaseService.acquireLease(req.getOwner(), req.getMetadata() == null ? null : req.getMetadata().toString(),
-                clientIp, clientHostname, now);
+                clientIp, clientHostname, groupName, now);
         if (maybe.isPresent()) {
             SchemaLease lease = maybe.get();
             AcquireLeaseResponse resp = new AcquireLeaseResponse(lease.getLeaseId(), lease.getSchemaName(),

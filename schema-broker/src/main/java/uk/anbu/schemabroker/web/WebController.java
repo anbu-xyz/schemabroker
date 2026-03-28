@@ -35,6 +35,7 @@ public class WebController {
             + ".status { font-weight: 600; }";
     private static final List<String> TABLE_HEADERS = List.of(
             "Schema",
+            "Group",
             "Login User",
             "JDBC URL",
             "Enabled",
@@ -88,6 +89,7 @@ public class WebController {
             for (SchemaStatusDto schema : schemas) {
                 body.with(tr()
                         .with(td(schema.getSchema()))
+                                .with(td(schema.getGroupName()))
                         .with(td(schema.getLoginUser()))
                         .with(td(schema.getJdbcUrl()))
                         .with(td(Boolean.toString(schema.isEnabled())))

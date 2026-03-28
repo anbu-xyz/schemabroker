@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
+
 @Component
 @Slf4j
 public class SchemaPoolInitializer implements ApplicationRunner {
@@ -86,6 +88,10 @@ public class SchemaPoolInitializer implements ApplicationRunner {
             pool.setLoginUser(definition.getLoginUser());
             changed = true;
         }
+        if (!Objects.equals(pool.getGroupName(), definition.getGroupName())) {
+            pool.setGroupName(definition.getGroupName());
+            changed = true;
+        }
         if (!Objects.equals(pool.getJdbcUrl(), definition.getJdbcUrl())) {
             pool.setJdbcUrl(definition.getJdbcUrl());
             changed = true;
@@ -110,9 +116,13 @@ public class SchemaPoolInitializer implements ApplicationRunner {
     @Getter
     private static final class SchemaDefinition {
         private String schemaName;
+        private String groupName;
         private String loginUser;
         private String jdbcUrl;
 
+        public String getGroupName() {
+            return groupName == null? DEFAULT_GROUP_NAME : groupName;
+        }
     }
 }
 

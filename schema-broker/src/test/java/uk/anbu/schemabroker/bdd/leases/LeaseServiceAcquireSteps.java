@@ -14,9 +14,9 @@ import uk.anbu.schemabroker.service.LeaseStatus;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
 
 public class LeaseServiceAcquireSteps {
 
@@ -43,6 +43,7 @@ public class LeaseServiceAcquireSteps {
         for (Map<String, String> row : rows) {
             SchemaPool pool = new SchemaPool();
             pool.setSchemaName(row.get("schemaName"));
+            pool.setGroupName(Optional.ofNullable(row.get("groupName")).orElse(DEFAULT_GROUP_NAME));
             pool.setLoginUser("sa");
             pool.setJdbcUrl("jdbc:h2:mem:" + row.get("schemaName"));
             pool.setEnabled(Boolean.parseBoolean(row.get("enabled")));
@@ -99,6 +100,13 @@ public class LeaseServiceAcquireSteps {
     public void a_client_acquires_a_lease_with_metadata(String owner, String metadata) {
         var now = Instant.now();
         acquiredLease = leaseService.acquireLease(owner, metadata, "127.0.0.1", "localhost", now);
+    }
+
+    @When("a client {string} has acquired a lease from group {string} with metadata {string}")
+    @When("a client {string} acquires a lease from group {string} with metadata {string}")
+    public void a_client_acquires_a_lease_from_group_with_metadata(String owner, String groupName, String metadata) {
+        var now = Instant.now();
+        acquiredLease = leaseService.acquireLease(owner, metadata, "127.0.0.1", "localhost", groupName, now);
     }
 
     @Then("a lease is returned")

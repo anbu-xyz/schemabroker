@@ -19,6 +19,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: group_name
+                  type: VARCHAR(100)
+                  defaultValue: "default"
+                  constraints:
+                    nullable: false
+              - column:
                   name: login_user
                   type: VARCHAR(100)
                   constraints:

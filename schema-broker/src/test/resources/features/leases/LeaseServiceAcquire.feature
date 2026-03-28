@@ -44,3 +44,33 @@ Feature: Acquire schema lease
     When a client "client-4" acquires a lease with metadata "project=my-service"
     Then a lease is returned
     And the lease schema is "SCHEMA_01"
+
+  Scenario: Acquire a lease from a specific group
+    Given the following schema pools exist:
+      | schemaName    | groupName | enabled |
+      | SCHEMA_TEAM   | teamcity  | true    |
+      | SCHEMA_OTHER  | other     | true    |
+    And there are no active leases
+    When a client "client-5" acquires a lease from group "teamcity" with metadata "project=my-service"
+    Then a lease is returned
+    And the lease schema is "SCHEMA_TEAM"
+
+  Scenario: Acquire a lease from default group if requested group has exhausted eligible pools
+    Given the following schema pools exist:
+      | schemaName   | groupName | enabled |
+      | SCHEMA_TEAM  | teamcity  | true    |
+      | SCHEMA_OTHER | default   | true    |
+    And there are no active leases
+    And a client "client-5" has acquired a lease from group "teamcity" with metadata "project=my-service-5"
+    When a client "client-6" acquires a lease from group "teamcity" with metadata "project=my-service-6"
+    Then a lease is returned
+    And the lease schema is "SCHEMA_OTHER"
+
+  Scenario: No schemas available when requested group has no eligible pools
+    Given the following schema pools exist:
+      | schemaName   | groupName | enabled |
+      | SCHEMA_ONE   | alpha     | true    |
+      | SCHEMA_TWO   | beta      | true    |
+    And there are no active leases
+    When a client "client-6" acquires a lease from group "gamma" with metadata "project=my-service"
+    Then no lease is returned

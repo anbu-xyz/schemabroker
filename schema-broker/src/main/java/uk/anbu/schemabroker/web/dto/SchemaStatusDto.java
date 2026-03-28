@@ -12,6 +12,7 @@ import java.time.Instant;
 public class SchemaStatusDto {
 
     private String schema;
+    private String groupName;
     private String loginUser;
     private String jdbcUrl;
     private boolean enabled;

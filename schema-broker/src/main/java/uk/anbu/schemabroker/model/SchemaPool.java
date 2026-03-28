@@ -19,6 +19,9 @@ public class SchemaPool {
     @Column(name = "schema_name", nullable = false, length = 100)
     private String schemaName;
 
+    @Column(name = "group_name", nullable = false, length = 100)
+    private String groupName;
+
     @Column(name = "login_user", nullable = false, length = 100)
     private String loginUser;
 

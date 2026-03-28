@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AcquireLeaseRequest {
     private String owner;
+    private String groupName;
     private Object metadata;
 }
 

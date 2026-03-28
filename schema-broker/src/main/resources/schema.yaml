@@ -1,11 +1,14 @@
 schemas:
   - schemaName: SCHEMA_01
+    groupName: teamcity
     loginUser: sa
     jdbcUrl: jdbc:h2:mem:schema_01;DB_CLOSE_DELAY=-1
   - schemaName: SCHEMA_02
+    groupName: teamcity
     loginUser: sa
     jdbcUrl: jdbc:h2:mem:schema_02;DB_CLOSE_DELAY=-1
   - schemaName: SCHEMA_03
+    groupName: teamcity
     loginUser: sa
     jdbcUrl: jdbc:h2:mem:schema_03;DB_CLOSE_DELAY=-1
   - schemaName: SCHEMA_04

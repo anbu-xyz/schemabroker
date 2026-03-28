@@ -21,6 +21,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
 
 @SpringBootTest
 class LeaseServiceConcurrencyTest {
@@ -88,6 +89,7 @@ class LeaseServiceConcurrencyTest {
     private SchemaPool createPool(String schemaName) {
         SchemaPool pool = new SchemaPool();
         pool.setSchemaName(schemaName);
+        pool.setGroupName(DEFAULT_GROUP_NAME);
         pool.setLoginUser("sa");
         pool.setJdbcUrl("jdbc:h2:mem:" + schemaName);
         pool.setEnabled(true);

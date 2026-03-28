@@ -15,17 +15,14 @@ import uk.anbu.schemabroker.web.dto.SchemaStatusDto;
 import uk.anbu.schemabroker.web.dto.StatusResponse;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class LeaseService {
+
+    public static final String DEFAULT_GROUP_NAME = "default";
 
     private final SchemaPoolRepository poolRepo;
     private final SchemaLeaseRepository leaseRepo;
@@ -61,9 +58,24 @@ public class LeaseService {
     public Optional<SchemaLease> acquireLease(String owner, String metadata,
                                               String clientIp, String clientHostname,
                                               Instant now) {
+        return acquireLease(owner, metadata, clientIp, clientHostname, DEFAULT_GROUP_NAME, now);
+    }
+
+    @Transactional
+    public Optional<SchemaLease> acquireLease(String owner, String metadata,
+                                              String clientIp, String clientHostname,
+                                              String groupName, Instant now) {
         // Find enabled pools
-        List<SchemaPool> pools = new ArrayList<>(poolRepo.findAllByEnabledTrue());
+        var enabledPool = poolRepo.findAllByEnabledTrue();
+        var eligiblePool = enabledPool.stream()
+                .filter(p -> Objects.equals(p.getGroupName(), groupName))
+                .toList();
+        var defaultPool = enabledPool.stream()
+                    .filter(p -> Objects.equals(p.getGroupName(), DEFAULT_GROUP_NAME))
+                    .toList();
+        List<SchemaPool> pools = new ArrayList<>(eligiblePool);
         Collections.shuffle(pools);
+        pools.addAll(defaultPool);
         log.info("Number of available schemas: {}", pools.size());
         List<String> names = pools.stream().map(SchemaPool::getSchemaName).toList();
         log.info("Available schemas: {}", names);
@@ -157,6 +169,7 @@ public class LeaseService {
         if (lease != null && enabled) {
             return new SchemaStatusDto(
                     pool.getSchemaName(),
+                    pool.getGroupName(),
                     pool.getLoginUser(),
                     pool.getJdbcUrl(),
                     true,
@@ -168,6 +181,7 @@ public class LeaseService {
         } else {
             return new SchemaStatusDto(
                     pool.getSchemaName(),
+                    pool.getGroupName(),
                     pool.getLoginUser(),
                     pool.getJdbcUrl(),
                     enabled,
