@@ -1,8 +1,8 @@
-package uk.anbu.schemabroker.module2.web;
+package uk.anbu.schemabroker.sample.task.web;
 
 import org.springframework.web.bind.annotation.*;
-import uk.anbu.schemabroker.module2.model.Task;
-import uk.anbu.schemabroker.module2.repository.TaskRepository;
+import uk.anbu.schemabroker.sample.task.model.Task;
+import uk.anbu.schemabroker.sample.task.repository.TaskRepository;
 
 import java.util.List;
 

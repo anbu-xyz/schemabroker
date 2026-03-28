@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>uk.anbu</groupId>
-    <artifactId>schemabroker</artifactId>
+    <artifactId>schema-broker</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>

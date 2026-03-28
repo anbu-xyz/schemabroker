@@ -1,4 +1,4 @@
-package uk.anbu.schemabroker.module1.model;
+package uk.anbu.schemabroker.sample.note.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

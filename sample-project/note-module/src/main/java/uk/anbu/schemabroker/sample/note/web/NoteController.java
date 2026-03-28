@@ -1,9 +1,9 @@
-package uk.anbu.schemabroker.module1.web;
+package uk.anbu.schemabroker.sample.note.web;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.anbu.schemabroker.module1.model.Note;
-import uk.anbu.schemabroker.module1.repository.NoteRepository;
+import uk.anbu.schemabroker.sample.note.model.Note;
+import uk.anbu.schemabroker.sample.note.repository.NoteRepository;
 
 import java.net.URI;
 import java.util.List;

@@ -1,13 +1,13 @@
-package uk.anbu.schemabroker.module2;
+package uk.anbu.schemabroker.sample.note;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TaskApplication {
+public class NoteApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TaskApplication.class, args);
+        SpringApplication.run(NoteApplication.class, args);
     }
 }
 

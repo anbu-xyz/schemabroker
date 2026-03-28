@@ -1,4 +1,4 @@
-package uk.anbu.schemabroker.module1;
+package uk.anbu.schemabroker.sample.note;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
