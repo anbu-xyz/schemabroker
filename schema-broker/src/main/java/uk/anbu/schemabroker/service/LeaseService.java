@@ -15,6 +15,8 @@ import uk.anbu.schemabroker.web.dto.SchemaStatusDto;
 import uk.anbu.schemabroker.web.dto.StatusResponse;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,7 +62,8 @@ public class LeaseService {
                                               String clientIp, String clientHostname,
                                               Instant now) {
         // Find enabled pools
-        List<SchemaPool> pools = poolRepo.findAllByEnabledTrue();
+        List<SchemaPool> pools = new ArrayList<>(poolRepo.findAllByEnabledTrue());
+        Collections.shuffle(pools);
         log.info("Number of available schemas: {}", pools.size());
         List<String> names = pools.stream().map(SchemaPool::getSchemaName).toList();
         log.info("Available schemas: {}", names);
