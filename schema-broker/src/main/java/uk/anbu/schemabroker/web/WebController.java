@@ -23,7 +23,9 @@ import static j2html.TagCreator.*;
 @RestController
 public class WebController {
 
-    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_INSTANT;
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss")
+            .withZone(java.time.ZoneId.of("UTC"));
     private static final String BASE_STYLES = "body { font-family: Arial, sans-serif; margin: 3rem; background: #f7f9fb; }"
             + "table { border-collapse: collapse; width: 100%; margin-top: 1rem; }"
             + "th, td { border: 1px solid #c6cbd3; padding: 0.5rem 0.75rem; text-align: left; }"
@@ -56,7 +58,7 @@ public class WebController {
 
     private static String renderHtml(StatusResponse status) {
         Instant now = Instant.now();
-        String refreshed = TIMESTAMP_FORMATTER.format(now);
+        String refreshed = TIMESTAMP_FORMATTER.format(now) + " UTC";
         ContainerTag<?> content = body().with(
                 h1("Schema Broker Status"),
                 div().with(p().withText("Lease TTL: ").with(strong(status.ttlSeconds() + " seconds"))),
