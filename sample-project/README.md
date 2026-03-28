@@ -1,25 +1,29 @@
-# schemabroker/modules
+# schemabroker/sample-project
 
-This directory hosts a lightweight multi-module Maven project with two independent Spring Boot services that each expose an H2-backed data store for demos or integration testing.
+This directory hosts a lightweight multi-module Maven project with two independent Spring Boot services that each expose 
+an H2-backed data store for demos or integration testing.
 
 ## Project layout
 
-- `note-module` & `task-module` — Spring Boot web apps that share the same parent for dependency management. They each expose their own REST endpoints and H2 console.
+- `note-module` & `task-module` - Spring Boot web apps that share the same parent.
+- `schema-client` - a simple Java client library for interacting with the schema broker API, used by both modules 
+  to acquire/release schemas used in testing.
 
 ## Running
 
-From `project/`:
-
-```powershell
+```bash
 mvn clean install
 mvn -pl note-module spring-boot:run
 ```
 
 Or run `task-module` instead:
 
-```powershell
+```bash
 mvn -pl task-module spring-boot:run
 ```
 
-Both modules listen on their own ports (`8081` and `8082`) and use in-memory H2 instances (`module1db`, `module2db`). CLI commands automatically pick up the shared Spring Boot parent.
+### Running individual tests through maven
 
+```bash
+mvn -pl note-module -am -Dsurefire.failIfNoSpecifiedTests=false -Dtest=NoteApplicationTest test
+```

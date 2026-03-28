@@ -103,7 +103,7 @@ public class WebController {
                 body);
     }
 
-    @GetMapping(value = "/schemas/lease/{leaseId}", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/lease/{leaseId}", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> leaseDetails(@PathVariable String leaseId) {
         return leaseService.getLeaseDetails(leaseId)
                 .map(lease -> ResponseEntity.ok(renderLeaseDetails(lease)))
@@ -115,7 +115,7 @@ public class WebController {
         if (leaseId == null || leaseId.isEmpty()) {
             return span("-");
         }
-        return a(leaseId).withHref("/schemas/lease/" + leaseId).attr("target", "_blank");
+        return a(leaseId).withHref("/lease/" + leaseId);
     }
 
     private static String renderLeaseDetails(SchemaLease lease) {
