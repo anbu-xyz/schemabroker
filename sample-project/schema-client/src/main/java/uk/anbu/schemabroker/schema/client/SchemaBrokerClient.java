@@ -63,15 +63,17 @@ public final class SchemaBrokerClient {
     private SchemaLease sendRequest(HttpRequest request) {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            int httpStatusCode = response.statusCode();
+            if (httpStatusCode >= 200 && httpStatusCode < 300) {
                 return objectMapper.readValue(response.body(), SchemaLease.class);
             }
-            throw new SchemaClientException("Schema Broker responded with " + response.statusCode() + ": " + response.body());
+            throw new SchemaClientException(httpStatusCode,
+                    "Schema Broker responded with " + httpStatusCode + ": " + response.body());
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new SchemaClientException("Schema Broker request interrupted", ex);
+            throw new SchemaClientException(-1, "Schema Broker request interrupted", ex);
         } catch (IOException ex) {
-            throw new SchemaClientException("Failed to communicate with Schema Broker", ex);
+            throw new SchemaClientException(-1, "Failed to communicate with Schema Broker", ex);
         }
     }
 
@@ -80,7 +82,7 @@ public final class SchemaBrokerClient {
             String payload = objectMapper.writeValueAsString(request);
             return HttpRequest.BodyPublishers.ofString(payload);
         } catch (IOException ex) {
-            throw new SchemaClientException("Unable to serialize lease request", ex);
+            throw new SchemaClientException(-1, "Unable to serialize lease request", ex);
         }
     }
 

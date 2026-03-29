@@ -53,6 +53,19 @@ public final class SchemaClientHeartbeat {
             try {
                 SchemaLease lease = client.heartbeat(leaseInfo.leaseId());
                 logger.info("Heartbeat ok for lease " + lease.leaseId() + " expiresAt=" + lease.expiresAt());
+            } catch (SchemaClientException ex) {
+                int httpStatusCode = ex.getHttpStatusCode();
+                // 404 = HttpStatus.NOT_FOUND, 410 = HttpStatus.GONE
+                if (httpStatusCode == 404 || httpStatusCode == 410) {
+                    logger.warning("Lease " + leaseInfo.leaseId() +
+                            " is no longer active (httpStatusCode " + httpStatusCode + "); stopping heartbeat");
+                } else {
+                    logger.warning("Heartbeat failed (httpStatusCode " + httpStatusCode + "): " + ex.getMessage());
+                }
+                if (httpStatusCode >= 400) {
+                    logger.warning("Stopping heartbeat due to lease issue");
+                    return;
+                }
             } catch (Exception ex) {
                 logger.warning("Heartbeat failed: " + ex.getMessage());
             }
