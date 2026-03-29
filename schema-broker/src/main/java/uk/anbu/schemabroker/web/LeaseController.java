@@ -11,14 +11,20 @@ import uk.anbu.schemabroker.web.dto.AcquireLeaseResponse;
 import uk.anbu.schemabroker.web.dto.ReleaseLeaseResponse;
 import uk.anbu.schemabroker.model.SchemaLease;
 
+import java.net.InetAddress;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
 
 @RestController
 @RequestMapping("/api/v1/leases")
 public class LeaseController {
+
+    private static final ConcurrentHashMap<String, CachedHostname> HOSTNAME_CACHE = new ConcurrentHashMap<>();
+    private static final Duration CACHE_TTL = Duration.ofMinutes(60);
 
     private final LeaseService leaseService;
 
@@ -30,7 +36,7 @@ public class LeaseController {
     public ResponseEntity<?> acquireLease(@RequestBody AcquireLeaseRequest req, HttpServletRequest request) {
         var now = Instant.now();
         var clientIp = request.getRemoteAddr();
-        var clientHostname = request.getRemoteHost();
+        var clientHostname = resolveHostName(clientIp, request.getRemoteHost());
         var groupName = req.getGroupName() == null? DEFAULT_GROUP_NAME : req.getGroupName();
         var maybe = leaseService.acquireLease(req.getOwner(), req.getMetadata() == null ? null : req.getMetadata().toString(),
                 clientIp, clientHostname, groupName, now);
@@ -43,6 +49,21 @@ public class LeaseController {
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(java.util.Collections.singletonMap("error", "no free schemas"));
         }
+    }
+
+    private static String resolveHostName(String clientIp, String defaultName) {
+        CachedHostname cached = HOSTNAME_CACHE.get(clientIp);
+        if (cached != null && Instant.now().isBefore(cached.expiresAt())) {
+            return cached.hostname();
+        }
+        String hostname;
+        try {
+            hostname = InetAddress.getByName(clientIp).getHostName();
+        } catch (java.net.UnknownHostException e) {
+            hostname = defaultName;
+        }
+        HOSTNAME_CACHE.put(clientIp, new CachedHostname(hostname, Instant.now().plus(CACHE_TTL)));
+        return hostname;
     }
 
     @PostMapping("/{leaseId}/heartbeat")
@@ -74,4 +95,7 @@ public class LeaseController {
         ReleaseLeaseResponse resp = new ReleaseLeaseResponse(lease.getLeaseId(), lease.getSchemaName(), lease.getStatus().name());
         return ResponseEntity.ok(resp);
     }
+
+    private record CachedHostname(String hostname, Instant expiresAt) {}
+
 }
