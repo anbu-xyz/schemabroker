@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class CliOptions {
+public final class LeaseCliOptions {
 
     private static final String DEFAULT_BROKER_URL = "http://localhost:8080";
     private static final String DEFAULT_OWNER = "schema-client";
@@ -16,14 +16,14 @@ public final class CliOptions {
     private final Path output;
     private final Map<String, String> metadata;
 
-    private CliOptions(URI brokerUrl, String owner, Path output, Map<String, String> metadata) {
+    private LeaseCliOptions(URI brokerUrl, String owner, Path output, Map<String, String> metadata) {
         this.brokerUrl = brokerUrl;
         this.owner = owner;
         this.output = output;
         this.metadata = metadata;
     }
 
-    public static CliOptions parse(String[] args) {
+    public static LeaseCliOptions parse(String[] args) {
         URI brokerUrl = URI.create(DEFAULT_BROKER_URL);
         String owner = DEFAULT_OWNER;
         Path output = DEFAULT_OUTPUT;
@@ -56,7 +56,7 @@ public final class CliOptions {
             }
         }
         metadata.putAll(additionalMetadata());
-        return new CliOptions(brokerUrl, owner, output, Map.copyOf(metadata));
+        return new LeaseCliOptions(brokerUrl, owner, output, Map.copyOf(metadata));
     }
 
     private static Map<String, String> additionalMetadata() {

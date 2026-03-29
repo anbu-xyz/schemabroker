@@ -16,7 +16,7 @@ public final class SchemaClientAcquireLease {
 
     public static void main(String[] args) {
         try {
-            CliOptions options = CliOptions.parse(args);
+            LeaseCliOptions options = LeaseCliOptions.parse(args);
             SchemaBrokerClient client = new SchemaBrokerClient(options.brokerUrl().toString());
             SchemaLease lease = client.acquireLease(new SchemaLeaseRequest(options.owner(), options.metadata()));
             LeasePropertyWriter writer = new LeasePropertyWriter(options.output());
@@ -32,7 +32,7 @@ public final class SchemaClientAcquireLease {
         }
     }
 
-    private static void startHeartbeat(CliOptions options) {
+    private static void startHeartbeat(LeaseCliOptions options) {
         long mavenPid = findParentPid();
         Path logFile = defaultLog(options.output());
 
