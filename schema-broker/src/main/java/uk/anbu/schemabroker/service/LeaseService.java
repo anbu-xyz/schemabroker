@@ -49,7 +49,11 @@ public class LeaseService {
         if (expired.isEmpty()) {
             return;
         }
-        expired.forEach(l -> l.setStatus(LeaseStatus.EXPIRED));
+        expired.forEach(l -> {
+            l.setStatus(LeaseStatus.EXPIRED);
+            l.setExpiredAt(now);
+            l.setExpiresAt(null);
+        });
         leaseRepo.saveAll(expired);
         log.info("Expired {} leases", expired.size());
     }
@@ -142,6 +146,8 @@ public class LeaseService {
         SchemaLease lease = leaseOpt.get();
         if (LeaseStatus.ACTIVE.equals(lease.getStatus())) {
             lease.setStatus(LeaseStatus.RELEASED);
+            lease.setReleasedAt(Instant.now());
+            lease.setExpiresAt(null);
             return Optional.of(leaseRepo.save(lease));
         }
         return Optional.of(lease);

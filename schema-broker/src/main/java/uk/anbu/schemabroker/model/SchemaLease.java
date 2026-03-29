@@ -41,6 +41,12 @@ public class SchemaLease {
     @Column(name = "expires_at")
     private Instant expiresAt;
 
+    @Column(name = "expired_at")
+    private Instant expiredAt;
+
+    @Column(name = "released_at")
+    private Instant releasedAt;
+
     @Column(name = "last_heartbeat_at")
     private Instant lastHeartbeatAt;
 

@@ -86,6 +86,12 @@ databaseChangeLog:
                   name: expires_at
                   type: TIMESTAMP
               - column:
+                  name: expired_at
+                  type: TIMESTAMP
+              - column:
+                  name: released_at
+                  type: TIMESTAMP
+              - column:
                   name: last_heartbeat_at
                   type: TIMESTAMP
               - column:
