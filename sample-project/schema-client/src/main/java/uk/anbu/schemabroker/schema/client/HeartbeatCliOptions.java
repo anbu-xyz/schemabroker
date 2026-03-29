@@ -95,7 +95,7 @@ public final class HeartbeatCliOptions {
         return input;
     }
 
-    public long mavenPid() {
+    public long parentPidToWatch() {
         return mavenPid;
     }
 

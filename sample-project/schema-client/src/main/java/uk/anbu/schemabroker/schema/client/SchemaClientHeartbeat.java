@@ -33,19 +33,20 @@ public final class SchemaClientHeartbeat {
             return;
         }
 
-        ProcessHandle mavenProcess = ProcessHandle.of(options.mavenPid())
-                .orElseThrow(() -> new IllegalArgumentException("Maven process not found for pid " + options.mavenPid()));
+        ProcessHandle mavenProcess = ProcessHandle.of(options.parentPidToWatch())
+                .orElseThrow(() -> new IllegalArgumentException("Maven process not found for pid " + options.parentPidToWatch()));
 
         SchemaBrokerClient client = new SchemaBrokerClient(options.brokerUrl().toString());
 
         logger.info("Heartbeat started for lease " + leaseInfo.leaseId() + " (schema=" + leaseInfo.schema() + ") " +
-                "watching maven pid=" + options.mavenPid() + " interval=" + options.interval().getSeconds() + "s " +
-                "maxRuntime=" + options.maxRuntime().toMinutes() + "m log=" + options.logFile().toAbsolutePath());
+                "watching parent pid to watch=" + options.parentPidToWatch() + " interval=" +
+                options.interval().getSeconds() + "s " + "maxRuntime=" + options.maxRuntime().toMinutes() +
+                "m log=" + options.logFile().toAbsolutePath());
 
         Instant deadline = Instant.now().plus(options.maxRuntime());
         while (Instant.now().isBefore(deadline)) {
             if (!mavenProcess.isAlive()) {
-                logger.info("Maven pid " + options.mavenPid() + " is no longer alive; releasing lease");
+                logger.info("Maven pid " + options.parentPidToWatch() + " is no longer alive; releasing lease");
                 safeRelease(client, leaseInfo.leaseId(), logger);
                 return;
             }
