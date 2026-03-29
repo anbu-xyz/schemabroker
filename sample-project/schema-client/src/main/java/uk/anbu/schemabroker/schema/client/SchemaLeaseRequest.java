@@ -1,7 +1,6 @@
 package uk.anbu.schemabroker.schema.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Collections;
 import java.util.Map;
 

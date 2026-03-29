@@ -73,7 +73,8 @@ public final class HeartbeatCliOptions {
 
         if (logFile == null) {
             Path parent = input.getParent();
-            logFile = parent != null ? parent.resolve("schema-client-heartbeat.log") : Path.of("schema-client-heartbeat.log");
+            logFile = parent != null ? parent.resolve("schema-client-heartbeat.log") :
+                Path.of("schema-client-heartbeat.log");
         }
 
         return new HeartbeatCliOptions(brokerUrl, input, mavenPid, interval, maxRuntime, logFile);

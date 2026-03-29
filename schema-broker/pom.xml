@@ -18,6 +18,9 @@
         <java.version>21</java.version>
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
         <cucumber.version>7.15.0</cucumber.version>
+        <checkstyle.version>13.3.0</checkstyle.version>
+        <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
+        <checkstyle.config.location>${project.basedir}/../config/checkstyle/checkstyle.xml</checkstyle.config.location>
     </properties>
 
     <dependencies>
@@ -124,6 +127,37 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>${checkstyle.config.location}</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <violationSeverity>warning</violationSeverity>
+                    <excludes>**/target/generated-sources/**,**/target/generated-test-sources/**</excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Run JUnit 5 + Cucumber on the JUnit Platform -->

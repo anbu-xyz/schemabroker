@@ -1,9 +1,8 @@
 package uk.anbu.schemabroker.schema.client;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,12 +17,12 @@ public final class SchemaLease {
 
     @JsonCreator
     public SchemaLease(
-            @JsonProperty("leaseId") String leaseId,
-            @JsonProperty("schema") String schema,
-            @JsonProperty("jdbcUrl") String jdbcUrl,
-            @JsonProperty("loginUser") String loginUser,
-            @JsonProperty("loginPassword") String loginPassword,
-            @JsonProperty("expiresAt") Instant expiresAt) {
+        @JsonProperty("leaseId") String leaseId,
+        @JsonProperty("schema") String schema,
+        @JsonProperty("jdbcUrl") String jdbcUrl,
+        @JsonProperty("loginUser") String loginUser,
+        @JsonProperty("loginPassword") String loginPassword,
+        @JsonProperty("expiresAt") Instant expiresAt) {
         this.leaseId = leaseId;
         this.schema = schema;
         this.jdbcUrl = jdbcUrl;

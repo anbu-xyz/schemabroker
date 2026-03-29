@@ -1,8 +1,13 @@
 package uk.anbu.schemabroker.bdd.leases;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.anbu.schemabroker.model.SchemaLease;
 import uk.anbu.schemabroker.model.SchemaPool;
@@ -10,12 +15,6 @@ import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 import uk.anbu.schemabroker.service.LeaseService;
 import uk.anbu.schemabroker.service.LeaseStatus;
-
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class LeaseServiceReleaseSteps {
 

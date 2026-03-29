@@ -1,10 +1,9 @@
 package uk.anbu.schemabroker.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data

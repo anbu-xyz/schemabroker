@@ -34,34 +34,41 @@ public final class SchemaClientHeartbeat {
         }
 
         ProcessHandle mavenProcess = ProcessHandle.of(options.parentPidToWatch())
-                .orElseThrow(() -> new IllegalArgumentException("Maven process not found for pid " + options.parentPidToWatch()));
+            .orElseThrow(() -> new IllegalArgumentException(
+                "Maven process not found for pid " + options.parentPidToWatch()));
 
         SchemaBrokerClient client = new SchemaBrokerClient(options.brokerUrl().toString());
 
-        logger.info("Heartbeat started for lease " + leaseInfo.leaseId() + " (schema=" + leaseInfo.schema() + ") " +
-                "watching parent pid to watch=" + options.parentPidToWatch() + " interval=" +
-                options.interval().getSeconds() + "s " + "maxRuntime=" + options.maxRuntime().toMinutes() +
-                "m log=" + options.logFile().toAbsolutePath());
+        logger.info("Heartbeat started for lease " + leaseInfo.leaseId() + " (schema="
+            + leaseInfo.schema() + ") "
+            + "watching parent pid to watch=" + options.parentPidToWatch() + " interval="
+            + options.interval().getSeconds() + "s " + "maxRuntime="
+            + options.maxRuntime().toMinutes()
+            + "m log=" + options.logFile().toAbsolutePath());
 
         Instant deadline = Instant.now().plus(options.maxRuntime());
         while (Instant.now().isBefore(deadline)) {
             if (!mavenProcess.isAlive()) {
-                logger.info("Maven pid " + options.parentPidToWatch() + " is no longer alive; releasing lease");
+                logger.info("Maven pid " + options.parentPidToWatch()
+                    + " is no longer alive; releasing lease");
                 safeRelease(client, leaseInfo.leaseId(), logger);
                 return;
             }
 
             try {
                 SchemaLease lease = client.heartbeat(leaseInfo.leaseId());
-                logger.info("Heartbeat ok for lease " + lease.leaseId() + " expiresAt=" + lease.expiresAt());
+                logger.info("Heartbeat ok for lease " + lease.leaseId() + " expiresAt="
+                    + lease.expiresAt());
             } catch (SchemaClientException ex) {
                 int httpStatusCode = ex.getHttpStatusCode();
                 // 404 = HttpStatus.NOT_FOUND, 410 = HttpStatus.GONE
                 if (httpStatusCode == 404 || httpStatusCode == 410) {
-                    logger.warning("Lease " + leaseInfo.leaseId() +
-                            " is no longer active (httpStatusCode " + httpStatusCode + "); stopping heartbeat");
+                    logger.warning("Lease " + leaseInfo.leaseId()
+                        + " is no longer active (httpStatusCode " + httpStatusCode
+                        + "); stopping heartbeat");
                 } else {
-                    logger.warning("Heartbeat failed (httpStatusCode " + httpStatusCode + "): " + ex.getMessage());
+                    logger.warning("Heartbeat failed (httpStatusCode " + httpStatusCode + "): "
+                        + ex.getMessage());
                 }
                 if (httpStatusCode >= 400) {
                     logger.warning("Stopping heartbeat due to lease issue");

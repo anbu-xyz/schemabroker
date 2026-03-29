@@ -1,6 +1,15 @@
 package uk.anbu.schemabroker.config;
 
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
+
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +20,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import uk.anbu.schemabroker.model.SchemaPool;
 import uk.anbu.schemabroker.repository.SchemaPoolRepository;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
 
 @Component
 @Slf4j
@@ -39,12 +38,18 @@ public class SchemaPoolInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         if (!schemaResource.exists()) {
-            log.warn("Schema initializer skipped because {} was not found", schemaResource.getDescription());
+            log.warn(
+                    "Schema initializer skipped because {} was not found",
+                    schemaResource.getDescription()
+            );
             return;
         }
         SchemaDefinitions definitions = loadDefinitions();
         if (definitions == null || definitions.getSchemas().isEmpty()) {
-            log.warn("Schema initializer did not find any entries in {}", schemaResource.getDescription());
+            log.warn(
+                    "Schema initializer did not find any entries in {}",
+                    schemaResource.getDescription()
+            );
             return;
         }
         Map<String, SchemaPool> existingPools = poolRepository.findAll().stream()
@@ -121,7 +126,7 @@ public class SchemaPoolInitializer implements ApplicationRunner {
         private String jdbcUrl;
 
         public String getGroupName() {
-            return groupName == null? DEFAULT_GROUP_NAME : groupName;
+            return groupName == null ? DEFAULT_GROUP_NAME : groupName;
         }
     }
 }

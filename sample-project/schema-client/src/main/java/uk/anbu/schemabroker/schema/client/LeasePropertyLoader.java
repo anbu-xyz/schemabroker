@@ -21,12 +21,14 @@ final class LeasePropertyLoader {
         try (BufferedReader reader = Files.newBufferedReader(source, StandardCharsets.UTF_8)) {
             props.load(reader);
         } catch (IOException ex) {
-            throw new SchemaClientException("Unable to read lease data from " + source.toAbsolutePath(), ex);
+            throw new SchemaClientException(
+                "Unable to read lease data from " + source.toAbsolutePath(), ex);
         }
 
         String leaseId = props.getProperty("schema.lease.id");
         if (leaseId == null || leaseId.isBlank()) {
-            throw new IllegalArgumentException("schema.lease.id is missing in " + source.toAbsolutePath());
+            throw new IllegalArgumentException(
+                "schema.lease.id is missing in " + source.toAbsolutePath());
         }
 
         String schema = props.getProperty("schema.name", "");

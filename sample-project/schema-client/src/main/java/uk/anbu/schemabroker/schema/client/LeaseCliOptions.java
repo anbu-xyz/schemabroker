@@ -16,7 +16,8 @@ public final class LeaseCliOptions {
     private final Path output;
     private final Map<String, String> metadata;
 
-    private LeaseCliOptions(URI brokerUrl, String owner, Path output, Map<String, String> metadata) {
+    private LeaseCliOptions(URI brokerUrl, String owner, Path output,
+                            Map<String, String> metadata) {
         this.brokerUrl = brokerUrl;
         this.owner = owner;
         this.output = output;
@@ -61,9 +62,10 @@ public final class LeaseCliOptions {
 
     private static Map<String, String> additionalMetadata() {
         return Map.of(
-                "OS", System.getProperty("os.name") + " " + System.getProperty("os.version"),
-                "Java", System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")",
-                "User", System.getProperty("user.name")
+            "OS", System.getProperty("os.name") + " " + System.getProperty("os.version"),
+            "Java",
+            System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")",
+            "User", System.getProperty("user.name")
         );
     }
 

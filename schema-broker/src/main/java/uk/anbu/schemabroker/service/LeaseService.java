@@ -1,5 +1,14 @@
 package uk.anbu.schemabroker.service;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +22,6 @@ import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 import uk.anbu.schemabroker.web.dto.LeaseListResponse;
 import uk.anbu.schemabroker.web.dto.SchemaStatusDto;
 import uk.anbu.schemabroker.web.dto.StatusResponse;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -72,11 +77,11 @@ public class LeaseService {
         // Find enabled pools
         var enabledPool = poolRepo.findAllByEnabledTrue();
         var eligiblePool = enabledPool.stream()
-                .filter(p -> Objects.equals(p.getGroupName(), groupName))
-                .toList();
+            .filter(p -> Objects.equals(p.getGroupName(), groupName))
+            .toList();
         var defaultPool = enabledPool.stream()
-                    .filter(p -> Objects.equals(p.getGroupName(), DEFAULT_GROUP_NAME))
-                    .toList();
+            .filter(p -> Objects.equals(p.getGroupName(), DEFAULT_GROUP_NAME))
+            .toList();
         List<SchemaPool> pools = new ArrayList<>(eligiblePool);
         Collections.shuffle(pools);
         pools.addAll(defaultPool);
@@ -85,31 +90,33 @@ public class LeaseService {
         log.info("Available schemas: {}", names);
         for (SchemaPool pool : pools) {
             // acquire lock
-            var schemaForUpdate = poolRepo.findSchemaForUpdate(pool.getSchemaName(), pool.getJdbcUrl());
+            var schemaForUpdate =
+                poolRepo.findSchemaForUpdate(pool.getSchemaName(), pool.getJdbcUrl());
             if (schemaForUpdate.isEmpty()) {
                 log.warn("Schema {}@{} disappeared!", pool.getSchemaName(), pool.getJdbcUrl());
                 continue;
             }
             // Check if there's an active lease for this schema
-            Optional<SchemaLease> active = leaseRepo.findActive(pool.getSchemaName(), pool.getJdbcUrl());
+            Optional<SchemaLease> active =
+                leaseRepo.findActive(pool.getSchemaName(), pool.getJdbcUrl());
             if (active.isPresent()) {
                 continue;
             }
             // Create lease
             var lease = SchemaLease.builder()
-                    .schemaName(pool.getSchemaName())
-                    .jdbcUrl(pool.getJdbcUrl())
-                    .loginUser(pool.getLoginUser())
-                    .leaseId(UUID.randomUUID().toString())
-                    .status(LeaseStatus.ACTIVE)
-                    .leasedAt(now)
-                    .expiresAt(now.plusSeconds(ttlSeconds))
-                    .lastHeartbeatAt(now)
-                    .owner(owner)
-                    .ipAddress(clientIp)
-                    .hostname(clientHostname)
-                    .metadata(metadata)
-                    .build();
+                .schemaName(pool.getSchemaName())
+                .jdbcUrl(pool.getJdbcUrl())
+                .loginUser(pool.getLoginUser())
+                .leaseId(UUID.randomUUID().toString())
+                .status(LeaseStatus.ACTIVE)
+                .leasedAt(now)
+                .expiresAt(now.plusSeconds(ttlSeconds))
+                .lastHeartbeatAt(now)
+                .owner(owner)
+                .ipAddress(clientIp)
+                .hostname(clientHostname)
+                .metadata(metadata)
+                .build();
             var saved = Optional.of(leaseRepo.save(lease));
             log.info("Acquired schema: {} for owner: {}", pool.getSchemaName(), owner);
             return saved;
@@ -159,11 +166,11 @@ public class LeaseService {
         List<SchemaLease> activeLeases = leaseRepo.findActiveLeasesNotExpired(now);
 
         Map<String, SchemaLease> bySchema = activeLeases.stream()
-                .collect(Collectors.toMap(SchemaLease::getSchemaName, l -> l, (a, b) -> a));
+            .collect(Collectors.toMap(SchemaLease::getSchemaName, l -> l, (a, b) -> a));
 
         List<SchemaStatusDto> schemas = pools.stream()
-                .map(pool -> toSchemaStatusDto(pool, bySchema))
-                .toList();
+            .map(pool -> toSchemaStatusDto(pool, bySchema))
+            .toList();
 
         return new StatusResponse(ttlSeconds, schemas);
     }
@@ -174,27 +181,27 @@ public class LeaseService {
         boolean enabled = Boolean.TRUE.equals(pool.getEnabled());
         if (lease != null && enabled) {
             return new SchemaStatusDto(
-                    pool.getSchemaName(),
-                    pool.getGroupName(),
-                    pool.getLoginUser(),
-                    pool.getJdbcUrl(),
-                    true,
-                    "LEASED",
-                    lease.getLeaseId(),
-                    lease.getExpiresAt(),
-                    lease.getOwner()
+                pool.getSchemaName(),
+                pool.getGroupName(),
+                pool.getLoginUser(),
+                pool.getJdbcUrl(),
+                true,
+                "LEASED",
+                lease.getLeaseId(),
+                lease.getExpiresAt(),
+                lease.getOwner()
             );
         } else {
             return new SchemaStatusDto(
-                    pool.getSchemaName(),
-                    pool.getGroupName(),
-                    pool.getLoginUser(),
-                    pool.getJdbcUrl(),
-                    enabled,
-                    "FREE",
-                    null,
-                    null,
-                    null
+                pool.getSchemaName(),
+                pool.getGroupName(),
+                pool.getLoginUser(),
+                pool.getJdbcUrl(),
+                enabled,
+                "FREE",
+                null,
+                null,
+                null
             );
         }
     }
@@ -206,9 +213,9 @@ public class LeaseService {
     @Transactional(readOnly = true)
     public LeaseListResponse listAllLeases(Instant now) {
         return new LeaseListResponse(
-                leaseRepo.findActiveLeasesNotExpired(now),
-                leaseRepo.findActiveExpired(now),
-                leaseRepo.findNonActive()
+            leaseRepo.findActiveLeasesNotExpired(now),
+            leaseRepo.findActiveExpired(now),
+            leaseRepo.findNonActive()
         );
     }
 }

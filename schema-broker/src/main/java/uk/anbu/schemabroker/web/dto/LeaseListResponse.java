@@ -1,8 +1,7 @@
 package uk.anbu.schemabroker.web.dto;
 
-import uk.anbu.schemabroker.model.SchemaLease;
-
 import java.util.List;
+import uk.anbu.schemabroker.model.SchemaLease;
 
 public record LeaseListResponse(List<SchemaLease> activeLeases,
                                 List<SchemaLease> activeExpiredLeases,

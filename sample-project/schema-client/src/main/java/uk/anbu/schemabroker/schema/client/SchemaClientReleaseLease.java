@@ -18,7 +18,7 @@ public final class SchemaClientReleaseLease {
             SchemaLease lease = client.release(leaseInfo.leaseId());
 
             System.out.printf("Released lease %s for %s from %s%n",
-                    lease.leaseId(), lease.schema(), options.input().toAbsolutePath());
+                lease.leaseId(), lease.schema(), options.input().toAbsolutePath());
         } catch (SchemaClientException | IllegalArgumentException ex) {
             System.err.println("Schema client failed: " + ex.getMessage());
             ex.printStackTrace(System.err);
@@ -35,12 +35,14 @@ public final class SchemaClientReleaseLease {
         try (BufferedReader reader = Files.newBufferedReader(source, StandardCharsets.UTF_8)) {
             props.load(reader);
         } catch (IOException ex) {
-            throw new SchemaClientException("Unable to read lease data from " + source.toAbsolutePath(), ex);
+            throw new SchemaClientException(
+                "Unable to read lease data from " + source.toAbsolutePath(), ex);
         }
 
         String leaseId = props.getProperty("schema.lease.id");
         if (leaseId == null || leaseId.isBlank()) {
-            throw new IllegalArgumentException("schema.lease.id is missing in " + source.toAbsolutePath());
+            throw new IllegalArgumentException(
+                "schema.lease.id is missing in " + source.toAbsolutePath());
         }
 
         String schema = props.getProperty("schema.name", "");

@@ -1,13 +1,7 @@
 package uk.anbu.schemabroker.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import uk.anbu.schemabroker.model.SchemaLease;
-import uk.anbu.schemabroker.model.SchemaPool;
-import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
-import uk.anbu.schemabroker.repository.SchemaPoolRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,9 +13,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import uk.anbu.schemabroker.model.SchemaLease;
+import uk.anbu.schemabroker.model.SchemaPool;
+import uk.anbu.schemabroker.repository.SchemaLeaseRepository;
+import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 
 @SpringBootTest
 class LeaseServiceConcurrencyTest {
@@ -58,7 +57,8 @@ class LeaseServiceConcurrencyTest {
         Callable<Optional<SchemaLease>> acquireLeaseTask = () -> {
             ready.countDown();
             start.await();
-            return leaseService.acquireLease(Thread.currentThread().getName(), "metadata", "127.0.0.1", "localhost", Instant.now());
+            return leaseService.acquireLease(Thread.currentThread().getName(), "metadata",
+                "127.0.0.1", "localhost", Instant.now());
         };
 
         try {
@@ -77,9 +77,8 @@ class LeaseServiceConcurrencyTest {
             Instant snapshot = Instant.now();
             List<SchemaLease> activeLeases = leaseRepository.findActiveLeasesNotExpired(snapshot);
             assertThat(activeLeases).hasSize(2);
-            Set<String> schemaNames = activeLeases.stream()
-                    .map(SchemaLease::getSchemaName)
-                    .collect(java.util.stream.Collectors.toSet());
+            Set<String> schemaNames = activeLeases.stream().map(SchemaLease::getSchemaName)
+                .collect(java.util.stream.Collectors.toSet());
             assertThat(schemaNames).containsExactlyInAnyOrder("SCHEMA_01", "SCHEMA_02");
         } finally {
             executor.shutdownNow();

@@ -1,9 +1,17 @@
 package uk.anbu.schemabroker.bdd.leases;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
+
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.anbu.schemabroker.model.SchemaLease;
 import uk.anbu.schemabroker.model.SchemaPool;
@@ -12,12 +20,7 @@ import uk.anbu.schemabroker.repository.SchemaPoolRepository;
 import uk.anbu.schemabroker.service.LeaseService;
 import uk.anbu.schemabroker.service.LeaseStatus;
 
-import java.time.Instant;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.anbu.schemabroker.service.LeaseService.DEFAULT_GROUP_NAME;
-
+@SuppressWarnings({"checkstyle:MethodName", "checkstyle:MissingJavadocMethod"})
 public class LeaseServiceAcquireSteps {
 
     @Autowired
@@ -60,19 +63,12 @@ public class LeaseServiceAcquireSteps {
     public void each_schema_has_an_active_non_expired_lease() {
         Instant now = Instant.now();
         for (SchemaPool pool : schemaPoolRepository.findAll()) {
-            var lease = SchemaLease.builder()
-                    .schemaName(pool.getSchemaName())
-                    .jdbcUrl(pool.getJdbcUrl())
-                    .loginUser(pool.getLoginUser())
-                    .status(LeaseStatus.ACTIVE)
-                    .leasedAt(now)
-                    .expiresAt(now.plusSeconds(600))
-                    .ipAddress("127.0.0.1")
-                    .hostname("localhost")
-                    .lastHeartbeatAt(now)
-                    .leaseId("lease-" + pool.getSchemaName())
-                    .owner("seed-owner")
-                    .build();
+            var lease =
+                SchemaLease.builder().schemaName(pool.getSchemaName()).jdbcUrl(pool.getJdbcUrl())
+                    .loginUser(pool.getLoginUser()).status(LeaseStatus.ACTIVE).leasedAt(now)
+                    .expiresAt(now.plusSeconds(600)).ipAddress("127.0.0.1").hostname("localhost")
+                    .lastHeartbeatAt(now).leaseId("lease-" + pool.getSchemaName())
+                    .owner("seed-owner").build();
             schemaLeaseRepository.save(lease);
         }
     }
@@ -80,19 +76,12 @@ public class LeaseServiceAcquireSteps {
     @Given("there is an expired lease for schema {string}")
     public void there_is_an_expired_lease_for_schema(String schemaName) {
         Instant now = Instant.now();
-        SchemaLease lease = SchemaLease.builder()
-                .schemaName(schemaName)
-                .jdbcUrl("jdbc:h2:mem:" + schemaName)
-                .loginUser("sa")
-                .status(LeaseStatus.EXPIRED)
-                .leasedAt(now.minusSeconds(1200))
-                .expiresAt(now.minusSeconds(600))
-                .lastHeartbeatAt(now.minusSeconds(1200))
-                .ipAddress("127.0.0.1")
-                .hostname("localhost")
-                .leaseId("expired-" + schemaName)
-                .owner("seed-owner")
-                .build();
+        SchemaLease lease =
+            SchemaLease.builder().schemaName(schemaName).jdbcUrl("jdbc:h2:mem:" + schemaName)
+                .loginUser("sa").status(LeaseStatus.EXPIRED).leasedAt(now.minusSeconds(1200))
+                .expiresAt(now.minusSeconds(600)).lastHeartbeatAt(now.minusSeconds(1200))
+                .ipAddress("127.0.0.1").hostname("localhost").leaseId("expired-" + schemaName)
+                .owner("seed-owner").build();
         schemaLeaseRepository.save(lease);
     }
 
@@ -104,9 +93,11 @@ public class LeaseServiceAcquireSteps {
 
     @When("a client {string} has acquired a lease from group {string} with metadata {string}")
     @When("a client {string} acquires a lease from group {string} with metadata {string}")
-    public void a_client_acquires_a_lease_from_group_with_metadata(String owner, String groupName, String metadata) {
+    public void a_client_acquires_a_lease_from_group_with_metadata(String owner, String groupName,
+                                                                   String metadata) {
         var now = Instant.now();
-        acquiredLease = leaseService.acquireLease(owner, metadata, "127.0.0.1", "localhost", groupName, now);
+        acquiredLease =
+            leaseService.acquireLease(owner, metadata, "127.0.0.1", "localhost", groupName, now);
     }
 
     @Then("a lease is returned")
